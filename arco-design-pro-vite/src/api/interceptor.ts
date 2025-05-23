@@ -11,6 +11,14 @@ export interface HttpResponse<T = unknown> {
   data: T;
 }
 
+// 新增后端API响应格式接口
+export interface ApiResponse<T = unknown> {
+  code: number;
+  message: string;
+  data: T;
+  timestamp: number;
+}
+
 if (import.meta.env.VITE_API_BASE_URL) {
   axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL;
 }
@@ -37,9 +45,22 @@ axios.interceptors.request.use(
 );
 // add response interceptors
 axios.interceptors.response.use(
-  (response: AxiosResponse<HttpResponse>) => {
+  (response: AxiosResponse) => {
     const res = response.data;
-    // if the custom code is not 20000, it is judged as an error.
+
+    // 检查是否是新的API响应格式
+    if ('code' in res && 'message' in res && 'timestamp' in res) {
+      // 处理新的API响应格式
+      if (res.code !== 0) {
+        Message.error({
+          content: res.message || 'Error',
+          duration: 5 * 1000,
+        });
+        return Promise.reject(new Error(res.message || 'Error'));
+      }
+      return res;
+    }
+    // 处理原有的响应格式
     if (res.code !== 20000) {
       Message.error({
         content: res.msg || 'Error',
@@ -69,7 +90,7 @@ axios.interceptors.response.use(
   },
   (error) => {
     Message.error({
-      content: error.msg || 'Request Error',
+      content: error.message || 'Request Error',
       duration: 5 * 1000,
     });
     return Promise.reject(error);

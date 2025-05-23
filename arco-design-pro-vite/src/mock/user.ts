@@ -18,7 +18,7 @@ setupMock({
         return successResponseWrap({
           name: 'admin',
           avatar:
-            '//lf1-xgcdn-tos.pstatp.com/obj/vcloud/vadmin/start.8e0e4855ee346a46ccff8ff3e24db27b.png',
+            'https://wx.qlogo.cn/mmhead/pburdzLK7PUegJ7zS0U15FOu03FCSYarPKXGbI6CBkDwGicRBhovbmhRrBWXcFevm6xVMnkz87V4/0',
           email: 'wangliqun@email.com',
           job: 'frontend',
           jobName: '前端艺术家',

@@ -13,7 +13,8 @@ import useAppStore from '../app';
 const useUserStore = defineStore('user', {
   state: (): UserState => ({
     name: undefined,
-    avatar: undefined,
+    avatar:
+      'https://wx.qlogo.cn/mmhead/pburdzLK7PUegJ7zS0U15FOu03FCSYarPKXGbI6CBkDwGicRBhovbmhRrBWXcFevm6xVMnkz87V4/0',
     job: undefined,
     organization: undefined,
     location: undefined,
