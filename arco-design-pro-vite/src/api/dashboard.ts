@@ -23,6 +23,9 @@ export function queryPopularList(params: { type: string }) {
 
 export interface ProductUpdateParams {
   content: string;
+  title: string;
+  checkedImg: string;
+  uncheckedImg: string;
 }
 
 export interface ProductUpdateResponse {
