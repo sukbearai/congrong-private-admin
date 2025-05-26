@@ -20,3 +20,21 @@ export interface PopularRecord {
 export function queryPopularList(params: { type: string }) {
   return axios.get<TableData[]>('/api/popular/list', { params });
 }
+
+export interface ProductUpdateParams {
+  content: string;
+}
+
+export interface ProductUpdateResponse {
+  code: number;
+  message: string;
+  data: any;
+  timestamp: number;
+}
+
+export function submitProductUpdate(params: ProductUpdateParams) {
+  return axios.post<ProductUpdateResponse>(
+    '/api/device/product-update',
+    params
+  );
+}
