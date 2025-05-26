@@ -23,7 +23,15 @@
         return;
       }
 
-      const response: any = await submitProductUpdate({ content: html.value });
+      const response: any = await submitProductUpdate({
+        title: '甄选产品',
+        content: html.value,
+        checkedImg:
+          'https://maixiangjk.oss-cn-hangzhou.aliyuncs.com/7a1JpA_HGh-abAekbeV17',
+        uncheckedImg:
+          'https://maixiangjk.oss-cn-hangzhou.aliyuncs.com/k94qBf-oYk-pVopLDZzU8',
+      });
+
       if (response.code === 0) {
         Message.success('提交成功');
       } else {
