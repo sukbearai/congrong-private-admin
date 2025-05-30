@@ -43,3 +43,37 @@ export function submitProductUpdate(params: ProductUpdateParams) {
     params
   );
 }
+
+export interface ProductListParams {
+  deviceIds?: string;
+  page?: number;
+  pageSize?: number;
+}
+
+export interface ProductListItem {
+  id: number;
+  title: string;
+  content: string;
+  constitutions: string;
+  deviceIds: string;
+  checkedImg: string;
+  uncheckedImg: string;
+  key: string;
+}
+
+export interface ProductListPagination {
+  total: number;
+}
+
+export interface ProductListResponse {
+  list: ProductListItem[];
+  pagination: ProductListPagination;
+}
+
+export function getProductList(params: ProductListParams = {}) {
+  return axios.get<ProductListResponse>('/api/device/product-list', { params });
+}
+
+export function deleteProduct(params: { key: string }) {
+  return axios.post('/api/device/product-delete', { key: params.key });
+}

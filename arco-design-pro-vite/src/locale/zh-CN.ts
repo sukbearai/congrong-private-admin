@@ -5,7 +5,7 @@ import localeSettings from './zh-CN/settings';
 
 export default {
   'messageBox.logout': '退出',
-  'menu.dashboard': '工作台',
+  'menu.dashboard': '设备-产品内容',
   'menu.server.dashboard': '仪表盘-服务端',
   'menu.server.workplace': '工作台-服务端',
   'menu.server.monitor': '实时监控-服务端',
@@ -19,10 +19,13 @@ export default {
   'menu.userManagement': '门店管理',
   'menu.userManagement.list': '门店列表',
   'menu.arcoWebsite': 'Arco Design',
+  'menu.cashier': '茶饮药膳收银台',
+  'menu.backend': '茶饮药膳后台',
   'menu.faq': '常见问题',
   'navbar.docs': '文档中心',
   'navbar.action.locale': '切换为中文',
   'workplace.form.title': '甄选产品',
+  'menu.dashboard.productList': '产品列表',
   // 门店管理相关
   'userManagement.title': '门店管理',
   'userManagement.createUser': '创建门店',

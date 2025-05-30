@@ -23,6 +23,7 @@ export default {
   'navbar.docs': 'Docs',
   'navbar.action.locale': 'Switch to English',
   'workplace.form.title': 'products',
+  'menu.dashboard.productList': 'Product List',
   // Store Management
   'userManagement.title': 'Store Management',
   'userManagement.createUser': 'Create Store',

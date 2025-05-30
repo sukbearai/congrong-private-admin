@@ -75,7 +75,7 @@
                   type="text"
                   size="small"
                   status="danger"
-                  :disabled="record.role === 'admin'"
+                  :disabled="record.id === 1"
                   @click="handleDelete(record)"
                 >
                   {{ $t('userManagement.actions.delete') }}

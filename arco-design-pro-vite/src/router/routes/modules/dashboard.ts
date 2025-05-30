@@ -23,6 +23,16 @@ const DASHBOARD: AppRouteRecordRaw = {
         roles: ['*'],
       },
     },
+    {
+      path: 'product-list',
+      name: 'ProductList',
+      component: () => import('@/views/dashboard/product-list/index.vue'),
+      meta: {
+        locale: 'menu.dashboard.productList',
+        requiresAuth: true,
+        roles: ['*'],
+      },
+    },
   ],
 };
 

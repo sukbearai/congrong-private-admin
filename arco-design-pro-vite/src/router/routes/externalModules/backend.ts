@@ -1,8 +1,8 @@
 export default {
-  path: 'https://arco.design',
-  name: 'arcoWebsite',
+  path: 'https://yun.onemu.cn',
+  name: 'backend',
   meta: {
-    locale: 'menu.arcoWebsite',
+    locale: 'menu.backend',
     icon: 'icon-link',
     requiresAuth: true,
     order: 8,
