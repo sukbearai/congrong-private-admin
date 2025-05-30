@@ -1,10 +1,10 @@
-import localeMessageBox from '@/components/message-box/locale/zh-CN';
 import localeLogin from '@/views/login/locale/zh-CN';
 
 /** simple end */
 import localeSettings from './zh-CN/settings';
 
 export default {
+  'messageBox.logout': '退出',
   'menu.dashboard': '工作台',
   'menu.server.dashboard': '仪表盘-服务端',
   'menu.server.workplace': '工作台-服务端',
@@ -50,6 +50,5 @@ export default {
   'userManagement.actions.edit': '编辑',
   'userManagement.actions.delete': '删除',
   ...localeSettings,
-  ...localeMessageBox,
   ...localeLogin,
 };

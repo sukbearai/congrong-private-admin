@@ -10,7 +10,7 @@
           :style="{ margin: 0, fontSize: '18px' }"
           :heading="5"
         >
-          Arco Pro
+          从容茶饮药膳
         </a-typography-title>
         <icon-menu-fold
           v-if="!topMenu && appStore.device === 'mobile'"
@@ -44,7 +44,7 @@
           </a-button>
         </a-tooltip>
       </li>
-      <li>
+      <!-- <li>
         <a-tooltip :content="$t('settings.title')">
           <a-button
             class="nav-btn"
@@ -57,7 +57,7 @@
             </template>
           </a-button>
         </a-tooltip>
-      </li>
+      </li> -->
       <li>
         <a-dropdown trigger="click">
           <a-avatar
@@ -97,9 +97,9 @@
     return userStore.avatar;
   });
   const topMenu = computed(() => appStore.topMenu && appStore.menu);
-  const setVisible = () => {
-    appStore.updateSettings({ globalSettings: true });
-  };
+  // const setVisible = () => {
+  //   appStore.updateSettings({ globalSettings: true });
+  // };
 
   const handleLogout = () => {
     logout();

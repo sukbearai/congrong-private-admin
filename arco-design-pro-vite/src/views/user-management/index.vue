@@ -75,6 +75,7 @@
                   type="text"
                   size="small"
                   status="danger"
+                  :disabled="record.role === 'admin'"
                   @click="handleDelete(record)"
                 >
                   {{ $t('userManagement.actions.delete') }}
@@ -243,6 +244,10 @@
     type UpdateUserData,
     type UserListItem,
   } from '@/api/user';
+  // import { useUserStore } from '@/store';
+
+  // const userStore = useUserStore();
+  // const { role: userRole } = userStore;
 
   // 响应式数据
   const loading = ref(false);

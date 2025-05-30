@@ -1,10 +1,10 @@
-import localeMessageBox from '@/components/message-box/locale/en-US';
 import localeLogin from '@/views/login/locale/en-US';
 
 /** simple end */
 import localeSettings from './en-US/settings';
 
 export default {
+  'messageBox.logout': 'logout',
   'menu.dashboard': 'Dashboard',
   'menu.server.dashboard': 'Dashboard-Server',
   'menu.server.workplace': 'Workplace-Server',
@@ -50,6 +50,5 @@ export default {
   'userManagement.actions.edit': 'Edit',
   'userManagement.actions.delete': 'Delete',
   ...localeSettings,
-  ...localeMessageBox,
   ...localeLogin,
 };

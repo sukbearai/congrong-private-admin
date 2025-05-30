@@ -1,5 +1,5 @@
 export default {
-  'login.form.title': '登录 Arco Design Pro',
+  'login.form.title': '登录 从容茶饮药膳系统',
   'login.form.phone.errMsg': '手机号不能为空',
   'login.form.password.errMsg': '密码不能为空',
   'login.form.login.errMsg': '登录出错，轻刷新重试',

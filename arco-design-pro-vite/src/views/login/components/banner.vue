@@ -16,24 +16,13 @@
 
 <script lang="ts" setup>
   import { computed } from 'vue';
-  import { useI18n } from 'vue-i18n';
   import bannerImage from '@/assets/images/login-banner.png';
 
-  const { t } = useI18n();
   const carouselItem = computed(() => [
     {
-      slogan: t('login.banner.slogan1'),
-      subSlogan: t('login.banner.subSlogan1'),
-      image: bannerImage,
-    },
-    {
-      slogan: t('login.banner.slogan2'),
-      subSlogan: t('login.banner.subSlogan2'),
-      image: bannerImage,
-    },
-    {
-      slogan: t('login.banner.slogan3'),
-      subSlogan: t('login.banner.subSlogan3'),
+      slogan: 'AI中医问诊',
+      subSlogan:
+        '致力于中医标准化、国际化，赋能中医药大健康产业，让基层也能享受到高品质中医服务',
       image: bannerImage,
     },
   ]);
@@ -60,6 +49,7 @@
       align-items: center;
       justify-content: center;
       height: 100%;
+      padding: 0 20px;
     }
 
     &-title {
