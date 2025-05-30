@@ -135,7 +135,8 @@
       });
 
       if (response.data) {
-        productList.value = response.data.list || [];
+        productList.value =
+          response.data.list.filter((item) => !!item.content) || [];
         pagination.total = response.data.pagination.total || 0;
       }
     } catch (error) {
@@ -178,7 +179,6 @@
           const res = await deleteProduct({ key: record.key });
           if (res.data.key) {
             Message.success('产品删除成功');
-            fetchProductList();
             setTimeout(() => {
               fetchProductList();
             }, 300);

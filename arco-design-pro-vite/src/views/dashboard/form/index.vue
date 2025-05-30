@@ -57,12 +57,12 @@
 <script lang="ts" setup>
   import { ref, reactive, onMounted } from 'vue';
   import { Message } from '@arco-design/web-vue';
-  import { useRouter } from 'vue-router';
+  // import { useRouter } from 'vue-router';
   import RichText from '@/components/rich-text/index.vue';
   import { submitProductUpdate } from '@/api/dashboard';
   import { useUserStore } from '@/store';
 
-  const router = useRouter();
+  // const router = useRouter();
   const userStore = useUserStore();
   const submitLoading = ref(false);
 
@@ -126,9 +126,9 @@
         // 重置表单
         handleReset();
         // 跳转到产品列表页
-        setTimeout(() => {
-          router.push({ name: 'ProductList' });
-        }, 300);
+        // setTimeout(() => {
+        //   router.push({ name: 'ProductList' });
+        // }, 300);
       } else {
         Message.error(response.message || '提交失败');
       }

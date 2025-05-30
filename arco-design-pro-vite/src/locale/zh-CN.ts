@@ -47,7 +47,7 @@ export default {
   'userManagement.form.rolePlaceholder': '请选择门店类型',
   'userManagement.form.deviceIds': '关联设备',
   'userManagement.form.deviceIdsPlaceholder':
-    '请输入关联设备id,多个设备id用逗号隔开,如:device001,device002',
+    '请输入关联设备id,多个设备id用英文逗号隔开,如:device001,device002',
   'userManagement.role.user': '普通门店',
   'userManagement.role.admin': '旗舰门店',
   'userManagement.actions.edit': '编辑',
