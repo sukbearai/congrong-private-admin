@@ -5,6 +5,6 @@ export interface UserState {
   phone: string;
   password: string;
   role: string;
-  deviceIds: string[];
+  deviceIds: string;
   [key: string]: any;
 }

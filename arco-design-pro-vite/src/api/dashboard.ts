@@ -26,6 +26,8 @@ export interface ProductUpdateParams {
   title: string;
   checkedImg: string;
   uncheckedImg: string;
+  constitutions: string;
+  deviceIds: string;
 }
 
 export interface ProductUpdateResponse {

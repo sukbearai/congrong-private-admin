@@ -33,6 +33,9 @@
     promotion: false,
     branding: false,
     license_key: 'gpl',
+    width: '100%',
+    height: 300,
+    resize: true,
     images_upload_handler: (blobInfo: any) =>
       new Promise((resolve, reject) => {
         const formData = new FormData();
@@ -50,11 +53,35 @@
 </script>
 
 <template>
-  <Editor
-    :id="tinymceId"
-    ref="editorRef"
-    v-model="modelValue"
-    :init="conf"
-    tinymce-script-src="/tinymce/tinymce.min.js"
-  />
+  <div class="rich-text-wrapper">
+    <Editor
+      :id="tinymceId"
+      ref="editorRef"
+      v-model="modelValue"
+      :init="conf"
+      tinymce-script-src="/tinymce/tinymce.min.js"
+    />
+  </div>
 </template>
+
+<style scoped lang="less">
+  .rich-text-wrapper {
+    width: 100%;
+  }
+
+  :deep(.tox-tinymce) {
+    width: 100% !important;
+  }
+
+  :deep(.tox-editor-container) {
+    width: 100% !important;
+  }
+
+  :deep(.tox-edit-area) {
+    width: 100% !important;
+  }
+
+  :deep(.tox-edit-area__iframe) {
+    width: 100% !important;
+  }
+</style>
