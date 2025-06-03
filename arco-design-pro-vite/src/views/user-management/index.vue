@@ -309,6 +309,7 @@
       { match: /^1[3-9]\d{9}$/, message: '请输入有效的联系电话' },
     ],
     password: [
+      { required: true, message: '密码不能为空' },
       { min: 6, message: '密码至少6位' },
       { max: 50, message: '密码不超过50位' },
     ],
