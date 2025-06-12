@@ -5,7 +5,7 @@
       <div class="greeting">嗨👌,朋友。</div>
       <div class="scene">
         <ChatTextArea
-          v-model="prompt"
+          v-model="input"
           :is-playing="isPlaying"
           @send="onSend"
           @stop="onStop"
@@ -17,22 +17,20 @@
       <ChatCard
         ref="chatCardRef"
         :max-height="height"
-        :data="messagesHistory"
+        :data="formattedMessages"
         :virtual-list-props="{ height: height - 92.39 }"
       >
         <template #footer>
           <ChatTextArea
-            v-model="prompt"
+            v-model="input"
             :is-playing="isPlaying"
-            placeholder="你可以继续向我提问任何问题～～"
+            placeholder="你可以继续向我提问～～"
             @send="onSend"
             @stop="onStop"
           />
         </template>
         <template #item="{ item }">
-          <div>
-            {{ JSON.stringify(item, null, 2) }}
-          </div>
+          <ChatItem :item="item" />
         </template>
       </ChatCard>
     </div>
@@ -43,12 +41,13 @@
   import { computed, onMounted, ref } from 'vue';
   import { useAppStore } from '@/store';
   import { useToggle, useElementSize } from '@vueuse/core';
+  import { useChat } from '@ai-sdk/vue';
   import ChatCard from './components/ChatCard.vue';
   import ChatTextArea from './components/ChatTextArea.vue';
+  import ChatItem from './components/ChatItem.vue';
 
   const chatWrapEl = ref();
   const chatCardRef = ref();
-  const prompt = ref();
   const { height } = useElementSize(chatWrapEl);
   const [isPlaying, toggle] = useToggle(false);
   const messagesHistory = ref<
@@ -60,6 +59,22 @@
       isMe: boolean;
     }[]
   >([]);
+
+  const { messages, input, handleSubmit } = useChat({
+    api: 'https://shebei.congrongtech.cn/api/ai/dialogue',
+  });
+
+  const formattedMessages = computed(() => {
+    return messages.value.map((message, index) => ({
+      ...message,
+      time: new Date().toLocaleTimeString('zh-CN', {
+        hour: '2-digit',
+        minute: '2-digit',
+      }),
+      icon: message.role === 'user' ? '/imgs/user.png' : '/imgs/bot.png',
+      id: message.id || `message-${index}`,
+    }));
+  });
 
   const hasMessages = computed(() => messagesHistory.value.length > 0);
 
@@ -74,10 +89,10 @@
           isMe,
         });
 
-        // 发送完消息滚动到底部
-        if (chatCardRef.value && chatCardRef.value.virtualListRef) {
-          chatCardRef.value.virtualListRef.scrollToBottom();
-        }
+        // 发送完消息滚动到底部，弃用⚠️
+        // if (chatCardRef.value && chatCardRef.value.virtualListRef) {
+        //   chatCardRef.value.virtualListRef.scrollToBottom();
+        // }
 
         resolve(true);
       }, 500);
@@ -85,9 +100,10 @@
   }
 
   function onSend() {
-    if (!prompt.value?.trim()) return;
-    sendMessage(prompt.value, true);
-    prompt.value = '';
+    if (!input.value?.trim()) return;
+    sendMessage(input.value, true);
+    handleSubmit();
+    input.value = '';
     toggle();
   }
 
@@ -115,6 +131,13 @@
 
   :deep(.chat-list-virtual-list) {
     padding-bottom: 10px;
+    // 自动底部
+    display: flex;
+    flex-direction: column-reverse;
+  }
+
+  :deep(.fix-h-collapse) {
+    flex-grow: 1;
   }
 </style>
 

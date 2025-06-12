@@ -41,7 +41,7 @@
   }
 
   withDefaults(defineProps<Props>(), {
-    placeholder: '今天，我能为你做什么？',
+    placeholder: '今天，我能为你做什么呢？',
     allowClear: true,
     isPlaying: false,
   });

@@ -150,6 +150,7 @@
 
 <template>
   <div ref="containerRef" :class="prefixCls" :style="style" @scroll="onScroll">
+    <div class="fix-h-collapse"></div>
     <div
       v-bind="listAttrs"
       :style="

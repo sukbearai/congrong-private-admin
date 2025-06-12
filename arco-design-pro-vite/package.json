@@ -30,6 +30,7 @@
     ]
   },
   "dependencies": {
+    "@ai-sdk/vue": "^1.2.12",
     "@arco-design/web-vue": "^2.44.7",
     "@tinymce/tinymce-vue": "^6.1.0",
     "@vueuse/core": "^9.3.0",
