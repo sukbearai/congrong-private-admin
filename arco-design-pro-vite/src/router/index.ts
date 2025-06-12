@@ -23,6 +23,14 @@ const router = createRouter({
         requiresAuth: false,
       },
     },
+    {
+      path: '/chat',
+      name: 'chat',
+      component: () => import('@/views/chat/index.vue'),
+      meta: {
+        requiresAuth: false,
+      },
+    },
     ...appRoutes,
     REDIRECT_MAIN,
     NOT_FOUND_ROUTE,

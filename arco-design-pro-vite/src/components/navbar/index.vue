@@ -83,8 +83,8 @@
 </template>
 
 <script lang="ts" setup>
-  import { computed, inject } from 'vue';
-  import { useFullscreen } from '@vueuse/core';
+  import { computed, inject, onMounted } from 'vue';
+  import { useDark, useFullscreen, useToggle } from '@vueuse/core';
   import { useAppStore, useUserStore } from '@/store';
   import useUser from '@/hooks/user';
   import Menu from '@/components/menu/index.vue';
@@ -100,6 +100,27 @@
   // const setVisible = () => {
   //   appStore.updateSettings({ globalSettings: true });
   // };
+
+  const isDark = useDark({
+    selector: 'body',
+    attribute: 'arco-theme',
+    valueDark: 'dark',
+    valueLight: 'light',
+    storageKey: 'arco-theme',
+    initialValue: 'auto',
+    onChanged(dark: boolean) {
+      // overridden default behavior
+      appStore.toggleTheme(dark);
+    },
+  });
+
+  const toggleTheme = useToggle(isDark);
+
+  onMounted(() => {
+    toggleTheme(
+      Boolean(window.matchMedia('(prefers-color-scheme: dark)').matches)
+    );
+  });
 
   const handleLogout = () => {
     logout();
