@@ -18,12 +18,15 @@
         ref="chatCardRef"
         :max-height="height"
         :data="formattedMessages"
-        :virtual-list-props="{ height: height - 92.39 }"
+        :virtual-list-props="{
+          height: height - 92.39, // 去掉底部输入框的高度
+        }"
+        :scrollbar="true"
       >
         <template #footer>
           <ChatTextArea
             v-model="input"
-            :is-playing="isPlaying"
+            :is-playing="isLoading"
             placeholder="你可以继续向我提问～～"
             @send="onSend"
             @stop="onStop"
@@ -50,17 +53,8 @@
   const chatCardRef = ref();
   const { height } = useElementSize(chatWrapEl);
   const [isPlaying, toggle] = useToggle(false);
-  const messagesHistory = ref<
-    {
-      time: string;
-      icon: string;
-      name: string;
-      content: string;
-      isMe: boolean;
-    }[]
-  >([]);
 
-  const { messages, input, handleSubmit } = useChat({
+  const { messages, input, handleSubmit, stop, isLoading } = useChat({
     api: 'https://shebei.congrongtech.cn/api/ai/dialogue',
   });
 
@@ -76,32 +70,10 @@
     }));
   });
 
-  const hasMessages = computed(() => messagesHistory.value.length > 0);
-
-  function sendMessage(msg: string, isMe = true) {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        messagesHistory.value.push({
-          time: '',
-          icon: isMe ? '/assets/daxiong.jpg' : '/assets/duola.jpg',
-          name: isMe ? 'user' : 'assistant',
-          content: msg,
-          isMe,
-        });
-
-        // 发送完消息滚动到底部，弃用⚠️
-        // if (chatCardRef.value && chatCardRef.value.virtualListRef) {
-        //   chatCardRef.value.virtualListRef.scrollToBottom();
-        // }
-
-        resolve(true);
-      }, 500);
-    });
-  }
+  const hasMessages = computed(() => messages.value.length > 0);
 
   function onSend() {
-    if (!input.value?.trim()) return;
-    sendMessage(input.value, true);
+    if (!input.value?.trim() || isLoading.value) return;
     handleSubmit();
     input.value = '';
     toggle();
@@ -109,6 +81,7 @@
 
   function onStop() {
     toggle();
+    stop();
   }
 
   const appStore = useAppStore();

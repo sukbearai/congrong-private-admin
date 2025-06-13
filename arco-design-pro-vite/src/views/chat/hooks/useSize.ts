@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable no-unused-expressions */
 /* eslint-disable no-plusplus */
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable no-shadow */
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable import/prefer-default-export */
@@ -100,7 +99,6 @@ export function useSize({
     let offsetIndex = 0;
     while (offset > 0) {
       offset -= getItemSize(_start + offsetIndex)!;
-      // eslint-disable-next-line no-unused-expressions
       isForward ? offsetIndex++ : offsetIndex--;
     }
     return offsetIndex;
