@@ -64,10 +64,10 @@
     breaks: true,
   });
 
+  md.disable('hr');
   md.renderer.rules.paragraph_open = () => {
     return '<div class="markdown-wrap">';
   };
-
   md.renderer.rules.paragraph_close = () => {
     return '</div>';
   };
