@@ -197,6 +197,6 @@
 <style>
   /* 修复 spin inline-block导致布局移动 */
   .chat-list-spin {
-    display: block;
+    display: block !important;
   }
 </style>
