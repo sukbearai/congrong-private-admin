@@ -137,7 +137,8 @@
   }
 
   :deep(.fix-h-collapse) {
-    flex-grow: 1;
+    // 修复数值为1时的滚动条
+    flex-grow: 0.99;
   }
 </style>
 
