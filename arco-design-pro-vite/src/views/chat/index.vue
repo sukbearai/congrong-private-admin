@@ -42,11 +42,13 @@
 </template>
 
 <script lang="ts" setup>
-  import { computed, onMounted, ref } from 'vue';
+  import { computed, nextTick, onMounted, ref, watch } from 'vue';
   import { useAppStore } from '@/store';
-  import { useToggle, useElementSize } from '@vueuse/core';
+  import { useToggle } from '@vueuse/core';
   import { useChat } from '@ai-sdk/vue';
   import MarkdownIt from 'markdown-it';
+  import userImg from '@/assets/images/user.png';
+  import botImg from '@/assets/images/bot.png';
   import ChatCard from './components/ChatCard.vue';
   import ChatTextArea from './components/ChatTextArea.vue';
   import ChatItem from './components/ChatItem.vue';
@@ -68,7 +70,7 @@
 
   const chatWrapEl = ref();
   const chatCardRef = ref();
-  const { height } = useElementSize(chatWrapEl);
+  const height = ref(0);
   const [isPlaying, toggle] = useToggle(false);
 
   const { messages, input, handleSubmit, stop, isLoading, setMessages } =
@@ -83,7 +85,7 @@
         hour: '2-digit',
         minute: '2-digit',
       }),
-      icon: message.role === 'user' ? '/imgs/user.png' : '/imgs/bot.png',
+      icon: message.role === 'user' ? userImg : botImg,
       id: message.id || `message-${index}`,
       // 渲染 Markdown
       renderedContent: md.render(message.content),
@@ -91,6 +93,19 @@
   });
 
   const hasMessages = computed(() => messages.value.length > 0);
+
+  const getInitialHeight = async () => {
+    await nextTick();
+    if (chatWrapEl.value) {
+      height.value = chatWrapEl.value.getBoundingClientRect().height;
+    }
+  };
+
+  watch(hasMessages, async (newVal) => {
+    if (newVal && height.value === 0) {
+      await getInitialHeight();
+    }
+  });
 
   function onSend() {
     if (!input.value?.trim() || isLoading.value) return;
