@@ -30,6 +30,7 @@
             placeholder="你可以继续向我提问～～"
             @send="onSend"
             @stop="onStop"
+            @restart="onRestart"
           />
         </template>
         <template #item="{ item }">
@@ -45,18 +46,35 @@
   import { useAppStore } from '@/store';
   import { useToggle, useElementSize } from '@vueuse/core';
   import { useChat } from '@ai-sdk/vue';
+  import MarkdownIt from 'markdown-it';
   import ChatCard from './components/ChatCard.vue';
   import ChatTextArea from './components/ChatTextArea.vue';
   import ChatItem from './components/ChatItem.vue';
+
+  const md = new MarkdownIt({
+    html: true,
+    linkify: true,
+    typographer: true,
+    breaks: true,
+  });
+
+  md.renderer.rules.paragraph_open = () => {
+    return '<div class="markdown-wrap">';
+  };
+
+  md.renderer.rules.paragraph_close = () => {
+    return '</div>';
+  };
 
   const chatWrapEl = ref();
   const chatCardRef = ref();
   const { height } = useElementSize(chatWrapEl);
   const [isPlaying, toggle] = useToggle(false);
 
-  const { messages, input, handleSubmit, stop, isLoading } = useChat({
-    api: 'https://shebei.congrongtech.cn/api/ai/dialogue',
-  });
+  const { messages, input, handleSubmit, stop, isLoading, setMessages } =
+    useChat({
+      api: 'https://shebei.congrongtech.cn/api/ai/dialogue',
+    });
 
   const formattedMessages = computed(() => {
     return messages.value.map((message, index) => ({
@@ -67,6 +85,8 @@
       }),
       icon: message.role === 'user' ? '/imgs/user.png' : '/imgs/bot.png',
       id: message.id || `message-${index}`,
+      // 渲染 Markdown
+      renderedContent: md.render(message.content),
     }));
   });
 
@@ -82,6 +102,15 @@
   function onStop() {
     toggle();
     stop();
+  }
+
+  function onRestart() {
+    if (isLoading.value) {
+      onStop();
+    }
+    setMessages([]);
+    input.value = '';
+    toggle();
   }
 
   const appStore = useAppStore();

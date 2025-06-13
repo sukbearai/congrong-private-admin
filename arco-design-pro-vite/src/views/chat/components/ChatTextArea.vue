@@ -9,18 +9,26 @@
   >
     <template #suffix>
       <div class="tool-area">
-        <icon-up-circle
-          v-if="!isPlaying"
-          :size="20"
-          style="cursor: pointer"
-          @click="$emit('send')"
-        />
-        <icon-pause-circle-fill
-          v-if="isPlaying"
-          :size="20"
-          style="cursor: pointer"
-          @click="$emit('stop')"
-        />
+        <a-space>
+          <icon-loop
+            :size="20"
+            style="cursor: pointer"
+            @click="$emit('restart')"
+          />
+          <icon-up-circle
+            v-if="!isPlaying"
+            :size="20"
+            style="cursor: pointer"
+            @click="$emit('send')"
+          />
+
+          <icon-pause-circle-fill
+            v-if="isPlaying"
+            :size="20"
+            style="cursor: pointer"
+            @click="$emit('stop')"
+          />
+        </a-space>
       </div>
     </template>
   </a-textarea>
@@ -38,6 +46,7 @@
     (e: 'update:modelValue', value: string): void;
     (e: 'send'): void;
     (e: 'stop'): void;
+    (e: 'restart'): void;
   }
 
   withDefaults(defineProps<Props>(), {

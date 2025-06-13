@@ -38,6 +38,7 @@
     "dayjs": "^1.11.5",
     "echarts": "^5.4.0",
     "lodash": "^4.17.21",
+    "markdown-it": "^14.1.0",
     "mitt": "^3.0.0",
     "nprogress": "^0.2.0",
     "pinia": "^2.0.23",
