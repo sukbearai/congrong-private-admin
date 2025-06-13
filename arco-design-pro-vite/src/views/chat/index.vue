@@ -5,10 +5,12 @@
       <div class="greeting">嗨👌,朋友。</div>
       <div class="scene">
         <ChatTextArea
+          ref="chatTextAreaRef"
           v-model="input"
-          :is-playing="isPlaying"
+          :is-playing="isLoading"
           @send="onSend"
           @stop="onStop"
+          @toggle-model="onToggleModel"
         />
       </div>
     </div>
@@ -16,21 +18,23 @@
     <div v-if="hasMessages" ref="chatWrapEl" class="scene-two chat-wrap">
       <ChatCard
         ref="chatCardRef"
-        :max-height="height"
+        :max-height="scrollHeight"
         :data="formattedMessages"
         :virtual-list-props="{
-          height: height - 92.39, // 去掉底部输入框的高度
+          height: scrollHeight - chatTextAreaHeight, // 去掉底部输入框的高度
         }"
         :scrollbar="true"
       >
         <template #footer>
           <ChatTextArea
+            ref="chatTextAreaRef"
             v-model="input"
             :is-playing="isLoading"
             placeholder="你可以继续向我提问～～"
             @send="onSend"
             @stop="onStop"
             @restart="onRestart"
+            @toggle-model="onToggleModel"
           />
         </template>
         <template #item="{ item }">
@@ -44,7 +48,7 @@
 <script lang="ts" setup>
   import { computed, nextTick, onMounted, ref, watch } from 'vue';
   import { useAppStore } from '@/store';
-  import { useToggle } from '@vueuse/core';
+  import { useElementSize } from '@vueuse/core';
   import { useChat } from '@ai-sdk/vue';
   import MarkdownIt from 'markdown-it';
   import userImg from '@/assets/images/user.png';
@@ -70,12 +74,17 @@
 
   const chatWrapEl = ref();
   const chatCardRef = ref();
-  const height = ref(0);
-  const [isPlaying, toggle] = useToggle(false);
+  const chatTextAreaRef = ref();
+  const scrollHeight = ref(0);
+  const { height: chatTextAreaHeight } = useElementSize(chatTextAreaRef);
+  const model = ref('deepseek-chat');
 
   const { messages, input, handleSubmit, stop, isLoading, setMessages } =
     useChat({
       api: 'https://shebei.congrongtech.cn/api/ai/dialogue',
+      body: computed(() => ({
+        model: model.value,
+      })),
     });
 
   const formattedMessages = computed(() => {
@@ -89,6 +98,9 @@
       id: message.id || `message-${index}`,
       // 渲染 Markdown
       renderedContent: md.render(message.content),
+      renderedReasoning: message.reasoning
+        ? md.render(message.reasoning)
+        : null,
     }));
   });
 
@@ -97,12 +109,12 @@
   const getInitialHeight = async () => {
     await nextTick();
     if (chatWrapEl.value) {
-      height.value = chatWrapEl.value.getBoundingClientRect().height;
+      scrollHeight.value = chatWrapEl.value.getBoundingClientRect().height;
     }
   };
 
   watch(hasMessages, async (newVal) => {
-    if (newVal && height.value === 0) {
+    if (newVal && scrollHeight.value === 0) {
       await getInitialHeight();
     }
   });
@@ -111,11 +123,9 @@
     if (!input.value?.trim() || isLoading.value) return;
     handleSubmit();
     input.value = '';
-    toggle();
   }
 
   function onStop() {
-    toggle();
     stop();
   }
 
@@ -125,7 +135,11 @@
     }
     setMessages([]);
     input.value = '';
-    toggle();
+    model.value = 'deepseek-chat';
+  }
+
+  function onToggleModel(modelName: string) {
+    model.value = modelName;
   }
 
   const appStore = useAppStore();

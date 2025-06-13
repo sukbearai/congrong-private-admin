@@ -1,40 +1,54 @@
 <template>
-  <a-textarea
-    :model-value="modelValue"
-    :placeholder="placeholder"
-    :allow-clear="allowClear"
-    v-bind="$attrs"
-    @update:model-value="$emit('update:modelValue', $event)"
-    @keyup.enter="$emit('send')"
-  >
-    <template #suffix>
-      <div class="tool-area">
-        <a-space>
-          <icon-loop
-            :size="20"
-            style="cursor: pointer"
-            @click="$emit('restart')"
-          />
-          <icon-up-circle
-            v-if="!isPlaying"
-            :size="20"
-            style="cursor: pointer"
-            @click="$emit('send')"
-          />
+  <div class="chat-textarea">
+    <div class="tabs-area"
+      ><a-tag
+        :color="isTagChecked ? '#3c7eff59' : ''"
+        bordered
+        checkable
+        @click="onToggle"
+      >
+        DeepSeek-R1
+      </a-tag></div
+    >
+    <a-textarea
+      :model-value="modelValue"
+      :placeholder="placeholder"
+      :allow-clear="allowClear"
+      v-bind="$attrs"
+      @update:model-value="$emit('update:modelValue', $event)"
+      @keyup.enter="$emit('send')"
+    >
+      <template #suffix>
+        <div class="tool-area">
+          <a-space>
+            <icon-loop
+              :size="20"
+              style="cursor: pointer"
+              @click="$emit('restart')"
+            />
+            <icon-up-circle
+              v-if="!isPlaying"
+              :size="20"
+              style="cursor: pointer"
+              @click="$emit('send')"
+            />
 
-          <icon-pause-circle-fill
-            v-if="isPlaying"
-            :size="20"
-            style="cursor: pointer"
-            @click="$emit('stop')"
-          />
-        </a-space>
-      </div>
-    </template>
-  </a-textarea>
+            <icon-pause-circle-fill
+              v-if="isPlaying"
+              :size="20"
+              style="cursor: pointer"
+              @click="$emit('stop')"
+            />
+          </a-space>
+        </div>
+      </template>
+    </a-textarea>
+  </div>
 </template>
 
 <script lang="ts" setup>
+  import { useToggle } from '@vueuse/core';
+
   interface Props {
     modelValue?: string;
     placeholder?: string;
@@ -47,6 +61,7 @@
     (e: 'send'): void;
     (e: 'stop'): void;
     (e: 'restart'): void;
+    (e: 'toggle-model', model: string): void;
   }
 
   withDefaults(defineProps<Props>(), {
@@ -55,12 +70,33 @@
     isPlaying: false,
   });
 
-  defineEmits<Emits>();
+  const emit = defineEmits<Emits>();
+
+  const [isTagChecked, isTagToggle] = useToggle();
+
+  function onToggle() {
+    isTagToggle();
+    // 这里可以添加切换模型的逻辑
+    if (isTagChecked.value) {
+      // eslint-disable-next-line vue/custom-event-name-casing
+      emit('toggle-model', 'deepseek-reasoner');
+    } else {
+      // eslint-disable-next-line vue/custom-event-name-casing
+      emit('toggle-model', 'deepseek-chat');
+    }
+  }
 </script>
 
 <style lang="less" scoped>
   .tool-area {
     padding: 0px 12px 10px 12px;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .tabs-area {
+    margin-bottom: 10px;
+    padding: 0 12px;
     display: flex;
     justify-content: flex-end;
   }
