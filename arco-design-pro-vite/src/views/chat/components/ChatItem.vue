@@ -12,11 +12,17 @@
         class="reasoning-section"
       >
         <details class="reasoning-details" open>
-          <summary class="reasoning-summary">💭 思考过程</summary>
+          <summary class="reasoning-summary">💭 推理过程</summary>
           <div class="reasoning-content" v-html="item.renderedReasoning"></div>
         </details>
       </div>
       <!-- 主要回复内容 -->
+      <div
+        v-if="item.id === 'thinking-temp'"
+        class="message-content thinking-temp"
+      >
+        <icon-loading :size="20" />AI思考中...
+      </div>
       <div
         v-if="item.renderedContent && item.renderedContent.trim()"
         class="message-content"
@@ -43,6 +49,11 @@
 </script>
 
 <style lang="less" scoped>
+  .thinking-temp {
+    display: flex !important;
+    align-items: center;
+  }
+
   .chat-item {
     padding: 16px;
     margin-bottom: 12px;

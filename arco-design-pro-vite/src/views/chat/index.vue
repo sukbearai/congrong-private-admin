@@ -83,16 +83,23 @@
 
   const model = ref('deepseek-chat');
 
-  const { messages, input, handleSubmit, stop, isLoading, setMessages } =
-    useChat({
-      api: 'https://shebei.congrongtech.cn/api/ai/dialogue',
-      body: computed(() => ({
-        model: model.value,
-      })),
-    });
+  const {
+    messages,
+    input,
+    handleSubmit,
+    stop,
+    isLoading,
+    setMessages,
+    status,
+  } = useChat({
+    api: 'https://shebei.congrongtech.cn/api/ai/dialogue',
+    body: computed(() => ({
+      model: model.value,
+    })),
+  });
 
   const formattedMessages = computed(() => {
-    return messages.value.map((message, index) => ({
+    const formatted = messages.value.map((message, index) => ({
       ...message,
       time: new Date().toLocaleTimeString('zh-CN', {
         hour: '2-digit',
@@ -106,6 +113,25 @@
         ? md.render(message.reasoning)
         : null,
     }));
+
+    // 如果正在加载且有消息，添加思考中的临时消息
+    if (status.value === 'submitted' && messages.value.length > 0) {
+      formatted.push({
+        id: 'thinking-temp',
+        role: 'assistant' as const,
+        content: '模型思考中...',
+        renderedContent: null,
+        renderedReasoning: null,
+        time: new Date().toLocaleTimeString('zh-CN', {
+          hour: '2-digit',
+          minute: '2-digit',
+        }),
+        icon: botImg,
+        isTemporary: true, // 标记为临时消息
+      } as any);
+    }
+
+    return formatted;
   });
 
   const hasMessages = computed(() => messages.value.length > 0);
