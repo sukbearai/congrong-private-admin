@@ -1,5 +1,5 @@
 <template>
-  <div class="pages">
+  <div ref="pageEl" class="pages">
     <!-- 初始场景：用户第一次打开页面时显示 -->
     <div v-if="!hasMessages" class="scene-one">
       <div class="greeting">嗨👌,朋友。</div>
@@ -15,7 +15,7 @@
       </div>
     </div>
     <!-- 聊天界面：发送第一条消息后显示 -->
-    <div v-if="hasMessages" ref="chatWrapEl" class="scene-two chat-wrap">
+    <div v-if="hasMessages" class="scene-two chat-wrap">
       <ChatCard
         ref="chatCardRef"
         :max-height="scrollHeight"
@@ -46,9 +46,9 @@
 </template>
 
 <script lang="ts" setup>
-  import { computed, nextTick, onMounted, ref, watch } from 'vue';
+  import { computed, onMounted, ref, watch } from 'vue';
   import { useAppStore } from '@/store';
-  import { useElementSize } from '@vueuse/core';
+  import { useElementSize, useWindowSize } from '@vueuse/core';
   import { useChat } from '@ai-sdk/vue';
   import MarkdownIt from 'markdown-it';
   import userImg from '@/assets/images/user.png';
@@ -72,11 +72,15 @@
     return '</div>';
   };
 
-  const chatWrapEl = ref();
+  const pageEl = ref<HTMLElement>();
   const chatCardRef = ref();
   const chatTextAreaRef = ref();
-  const scrollHeight = ref(0);
   const { height: chatTextAreaHeight } = useElementSize(chatTextAreaRef);
+  const { width: windowWidth, height: windowHeight } = useWindowSize();
+
+  // 减去上下间距就是滚动区域的高度
+  const scrollHeight = computed(() => windowHeight.value - 20);
+
   const model = ref('deepseek-chat');
 
   const { messages, input, handleSubmit, stop, isLoading, setMessages } =
@@ -106,18 +110,16 @@
 
   const hasMessages = computed(() => messages.value.length > 0);
 
-  const getInitialHeight = async () => {
-    await nextTick();
-    if (chatWrapEl.value) {
-      scrollHeight.value = chatWrapEl.value.getBoundingClientRect().height;
+  // 兼容移动端vh\vw
+  const updatePageSize = async () => {
+    if (pageEl.value) {
+      pageEl.value.style.width = `${windowWidth.value}px`;
+      pageEl.value.style.height = `${windowHeight.value}px`;
     }
   };
 
-  watch(hasMessages, async (newVal) => {
-    if (newVal && scrollHeight.value === 0) {
-      await getInitialHeight();
-    }
-  });
+  // 监听窗口大小变化
+  watch([windowWidth, windowHeight], updatePageSize);
 
   function onSend() {
     if (!input.value?.trim() || isLoading.value) return;
@@ -143,7 +145,10 @@
   }
 
   const appStore = useAppStore();
-  onMounted(() => {
+
+  onMounted(async () => {
+    // 初始化页面尺寸
+    await updatePageSize();
     // eslint-disable-next-line no-unused-expressions
     window.matchMedia('(prefers-color-scheme: dark)').matches
       ? appStore.toggleTheme(true)
@@ -178,7 +183,6 @@
     padding: 10px;
     font-size: 16px;
     color: var(--color-text-1);
-    height: 100vh;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
