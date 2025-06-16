@@ -96,7 +96,7 @@
 
   .tabs-area {
     margin-bottom: 10px;
-    padding: 0 12px;
+    padding: 10px 12px 0;
     display: flex;
     justify-content: flex-end;
   }
