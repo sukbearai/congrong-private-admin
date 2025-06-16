@@ -64,7 +64,6 @@
     breaks: true,
   });
 
-  md.disable('hr');
   md.renderer.rules.paragraph_open = () => {
     return '<div class="markdown-wrap">';
   };
@@ -108,9 +107,9 @@
       icon: message.role === 'user' ? userImg : botImg,
       id: message.id || `message-${index}`,
       // 渲染 Markdown
-      renderedContent: md.render(message.content),
+      renderedContent: md.render(message.content).replace(/<hr\s*\/?>/gi, ''),
       renderedReasoning: message.reasoning
-        ? md.render(message.reasoning)
+        ? md.render(message.reasoning).replace(/<hr\s*\/?>/gi, '')
         : null,
     }));
 

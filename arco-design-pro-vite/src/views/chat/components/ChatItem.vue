@@ -21,7 +21,7 @@
         v-if="item.id === 'thinking-temp'"
         class="message-content thinking-temp"
       >
-        <icon-loading :size="20" />AI思考中...
+        <icon-loading :size="20" /><span class="tips">AI思考中...</span>
       </div>
       <div
         v-if="item.renderedContent && item.renderedContent.trim()"
@@ -52,6 +52,10 @@
   .thinking-temp {
     display: flex !important;
     align-items: center;
+  }
+
+  .tips {
+    margin-left: 5px;
   }
 
   .chat-item {
@@ -142,6 +146,7 @@
       line-height: 1.6;
       color: var(--color-text-1);
       font-size: 14px;
+      overflow-x: auto;
     }
   }
 
