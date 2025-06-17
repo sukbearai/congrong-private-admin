@@ -16,7 +16,7 @@
       :allow-clear="allowClear"
       v-bind="$attrs"
       @update:model-value="$emit('update:modelValue', $event)"
-      @keyup.enter="$emit('send')"
+      @keydown="handleKeydown"
     >
       <template #suffix>
         <div class="tool-area">
@@ -85,6 +85,27 @@
       emit('toggle-model', 'deepseek-chat');
     }
   }
+
+  const handleKeydown = (event: KeyboardEvent) => {
+    const isMobile = () => {
+      return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent
+      );
+    };
+
+    if (isMobile()) {
+      return;
+    }
+
+    if (event.key === 'Enter') {
+      if (event.shiftKey) {
+        // Shift+Enter: 换行，不阻止默认行为
+      } else {
+        event.preventDefault();
+        emit('send');
+      }
+    }
+  };
 </script>
 
 <style lang="less" scoped>
