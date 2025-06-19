@@ -32,10 +32,15 @@
     }
   }
 
+  @media (min-width: 1180px) {
+    .container {
+      min-height: 810px;
+    }
+  }
+
   .container {
     display: flex;
     height: 100vh;
-    min-height: 810px;
 
     .banner {
       width: 750px;
