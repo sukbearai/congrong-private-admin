@@ -1,7 +1,7 @@
 <template>
   <div class="banner">
     <div class="banner-inner">
-      <a-carousel class="carousel" animation-name="fade">
+      <!-- <a-carousel class="carousel" animation-name="fade">
         <a-carousel-item v-for="item in carouselItem" :key="item.slogan">
           <div :key="item.slogan" class="carousel-item">
             <div class="carousel-title">{{ item.slogan }}</div>
@@ -9,23 +9,23 @@
             <img class="carousel-image" :src="item.image" />
           </div>
         </a-carousel-item>
-      </a-carousel>
+      </a-carousel> -->
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-  import { computed } from 'vue';
-  import bannerImage from '@/assets/images/login-banner.png';
+  // import { computed } from 'vue';
+  // import bannerImage from '@/assets/images/login-banner.png';
 
-  const carouselItem = computed(() => [
-    {
-      slogan: 'AI中医问诊',
-      subSlogan:
-        '致力于中医标准化、国际化，赋能中医药大健康产业，让基层也能享受到高品质中医服务',
-      image: bannerImage,
-    },
-  ]);
+  // const carouselItem = computed(() => [
+  //   {
+  //     slogan: 'AI中医问诊',
+  //     subSlogan:
+  //       '致力于中医标准化、国际化，赋能中医药大健康产业，让基层也能享受到高品质中医服务',
+  //     image: bannerImage,
+  //   },
+  // ]);
 </script>
 
 <style lang="less" scoped>
@@ -37,6 +37,7 @@
     &-inner {
       flex: 1;
       height: 100%;
+      background: url('@/assets/images/bg.png') no-repeat center 0 / 100% 100%;
     }
   }
 

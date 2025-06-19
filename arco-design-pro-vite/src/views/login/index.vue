@@ -1,12 +1,12 @@
 <template>
   <div class="container">
-    <div class="logo">
+    <!-- <div class="logo">
       <img
         alt="logo"
         src="//p3-armor.byteimg.com/tos-cn-i-49unhts6dw/dfdba5317c0c20ce20e64fac803d52bc.svg~tplv-49unhts6dw-image.image"
       />
       <div class="logo-text">从容茶饮药膳系统</div>
-    </div>
+    </div> -->
     <LoginBanner />
     <div class="content">
       <div class="content-inner">
@@ -26,12 +26,19 @@
 </script>
 
 <style lang="less" scoped>
+  @media (max-width: 1180px) {
+    .banner {
+      display: none;
+    }
+  }
+
   .container {
     display: flex;
     height: 100vh;
+    min-height: 810px;
 
     .banner {
-      width: 550px;
+      width: 750px;
       background: linear-gradient(163.85deg, #1d2129 0%, #00308f 100%);
     }
 
