@@ -46,41 +46,49 @@
 </template>
 
 <script lang="ts" setup>
-  import { computed, onMounted, ref, watch } from 'vue';
-  import { useAppStore } from '@/store';
+  import { computed, onBeforeMount, onMounted, ref, watch } from 'vue';
+  // import { useAppStore } from '@/store';
   import { useElementSize, useWindowSize } from '@vueuse/core';
   import { useChat } from '@ai-sdk/vue';
   import MarkdownIt from 'markdown-it';
   import userImg from '@/assets/images/user.png';
   import botImg from '@/assets/images/bot.png';
+  import Shiki from '@shikijs/markdown-it';
   import ChatCard from './components/ChatCard.vue';
   import ChatTextArea from './components/ChatTextArea.vue';
   import ChatItem from './components/ChatItem.vue';
 
-  const md = new MarkdownIt({
-    html: true,
-    linkify: true,
-    typographer: true,
-    breaks: true,
-  });
+  async function initShikiInstance() {
+    const md = MarkdownIt();
 
-  md.renderer.rules.paragraph_open = () => {
-    return '<div class="markdown-wrap">';
-  };
-  md.renderer.rules.paragraph_close = () => {
-    return '</div>';
-  };
+    md.renderer.rules.paragraph_open = () => {
+      return '<div class="markdown-wrap">';
+    };
+    md.renderer.rules.paragraph_close = () => {
+      return '</div>';
+    };
+
+    md.use(
+      await Shiki({
+        themes: {
+          light: 'vitesse-light',
+          dark: 'vitesse-dark',
+        },
+      })
+    );
+
+    return md;
+  }
 
   const pageEl = ref<HTMLElement>();
   const chatCardRef = ref();
   const chatTextAreaRef = ref();
   const { height: chatTextAreaHeight } = useElementSize(chatTextAreaRef);
   const { width: windowWidth, height: windowHeight } = useWindowSize();
-
   // 减去上下间距就是滚动区域的高度
   const scrollHeight = computed(() => windowHeight.value - 20);
-
   const model = ref('deepseek-chat');
+  const md = ref<MarkdownIt | null>(null);
 
   const {
     messages,
@@ -107,9 +115,11 @@
       icon: message.role === 'user' ? userImg : botImg,
       id: message.id || `message-${index}`,
       // 渲染 Markdown
-      renderedContent: md.render(message.content).replace(/<hr\s*\/?>/gi, ''),
+      renderedContent: md.value
+        ?.render(message.content)
+        .replace(/<hr\s*\/?>/gi, ''),
       renderedReasoning: message.reasoning
-        ? md.render(message.reasoning).replace(/<hr\s*\/?>/gi, '')
+        ? md.value?.render(message.reasoning).replace(/<hr\s*\/?>/gi, '')
         : null,
     }));
 
@@ -169,25 +179,38 @@
     model.value = modelName;
   }
 
-  const appStore = useAppStore();
+  // const appStore = useAppStore();
+  onBeforeMount(async () => {
+    md.value = await initShikiInstance();
+  });
 
   onMounted(async () => {
-    // 初始化页面尺寸
     await updatePageSize();
     // eslint-disable-next-line no-unused-expressions
-    window.matchMedia('(prefers-color-scheme: dark)').matches
-      ? appStore.toggleTheme(true)
-      : appStore.toggleTheme(false);
+    // window.matchMedia('(prefers-color-scheme: dark)').matches
+    //   ? appStore.toggleTheme(true)
+    //   : appStore.toggleTheme(false);
   });
 </script>
 
 <style>
-  :deep(.shiki) {
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background-color: #f1f1f1;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: #c0c0c0;
+    border-radius: 3px;
+  }
+
+  pre {
     overflow-x: auto !important;
   }
-  /* pre {
-    overflow-x: auto !important;
-  } */
 </style>
 
 <style lang="less" scoped>
