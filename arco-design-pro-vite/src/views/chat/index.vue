@@ -182,9 +182,12 @@
 </script>
 
 <style>
-  pre {
+  :deep(.shiki) {
     overflow-x: auto !important;
   }
+  /* pre {
+    overflow-x: auto !important;
+  } */
 </style>
 
 <style lang="less" scoped>
