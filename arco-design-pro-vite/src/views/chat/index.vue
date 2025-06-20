@@ -181,6 +181,12 @@
   });
 </script>
 
+<style>
+  pre {
+    overflow-x: auto !important;
+  }
+</style>
+
 <style lang="less" scoped>
   :deep(.arco-textarea-wrapper) {
     border-radius: 24px;
@@ -200,10 +206,6 @@
   :deep(.fix-h-collapse) {
     // 修复数值为1时的滚动条
     flex-grow: 0.99;
-  }
-
-  pre {
-    overflow-x: auto;
   }
 </style>
 
