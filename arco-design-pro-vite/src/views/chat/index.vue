@@ -54,6 +54,7 @@
   import userImg from '@/assets/images/user.png';
   import botImg from '@/assets/images/bot.png';
   import Shiki from '@shikijs/markdown-it';
+  import { bundledLanguages } from 'shiki';
   import ChatCard from './components/ChatCard.vue';
   import ChatTextArea from './components/ChatTextArea.vue';
   import ChatItem from './components/ChatItem.vue';
@@ -68,14 +69,47 @@
       return '</div>';
     };
 
-    md.use(
-      await Shiki({
+    try {
+      const shiki = await Shiki({
         themes: {
           light: 'vitesse-light',
           dark: 'vitesse-dark',
         },
-      })
-    );
+        transformers: [
+          {
+            name: 'fallback-language-text',
+            preprocess(code, options) {
+              try {
+                // 如果语言不存在，使用 text 作为默认语言
+                if (
+                  !options.lang ||
+                  !Object.keys(bundledLanguages).includes(options.lang)
+                ) {
+                  options.lang = 'text';
+                }
+              } catch (error) {
+                // eslint-disable-next-line no-console
+                console.warn(
+                  'Language check failed, using text as fallback:',
+                  error
+                );
+                options.lang = 'text';
+              }
+              return code;
+            },
+          },
+        ],
+      });
+
+      md.use(shiki);
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error(
+        'Failed to initialize Shiki, using plain MarkdownIt:',
+        error
+      );
+      // 如果 Shiki 初始化失败，使用纯 MarkdownIt
+    }
 
     return md;
   }
