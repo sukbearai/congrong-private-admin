@@ -50,6 +50,7 @@
   // import { useAppStore } from '@/store';
   import { useElementSize, useWindowSize } from '@vueuse/core';
   import { useChat } from '@ai-sdk/vue';
+  import { Message } from '@arco-design/web-vue';
   import MarkdownIt from 'markdown-it';
   import userImg from '@/assets/images/user.png';
   import botImg from '@/assets/images/bot.png';
@@ -137,6 +138,12 @@
     body: computed(() => ({
       model: model.value,
     })),
+    onError(error) {
+      Message.error({
+        content: `网络错误: ${error.message || '未知错误'}`,
+        duration: 5000,
+      });
+    },
   });
 
   const formattedMessages = computed(() => {
