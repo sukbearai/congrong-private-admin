@@ -12,7 +12,7 @@
       </template>
 
       <a-table
-        row-key="key"
+        row-key="id"
         :loading="loading"
         :pagination="pagination"
         :data="productList"
@@ -176,8 +176,8 @@
       content: `确定要删除本条产品内容吗？此操作不可恢复。`,
       onOk: async () => {
         try {
-          const res = await deleteProduct({ key: record.key });
-          if (res.data.key) {
+          const res = await deleteProduct({ id: record.id });
+          if (res.data.id) {
             Message.success('产品删除成功');
             setTimeout(() => {
               fetchProductList();

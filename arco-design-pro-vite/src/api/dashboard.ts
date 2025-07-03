@@ -74,6 +74,6 @@ export function getProductList(params: ProductListParams = {}) {
   return axios.get<ProductListResponse>('/api/device/product-list', { params });
 }
 
-export function deleteProduct(params: { key: string }) {
-  return axios.post('/api/device/product-delete', { key: params.key });
+export function deleteProduct(params: { id: number }) {
+  return axios.post('/api/device/product-delete', { id: params.id });
 }
