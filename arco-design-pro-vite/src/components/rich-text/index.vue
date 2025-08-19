@@ -38,6 +38,14 @@
     resize: true,
     content_css: 'default',
     skin: 'oxide',
+    // 添加插件，包含链接功能
+    plugins: 'link table lists advlist autolink',
+    // 添加工具栏，包含链接按钮
+    toolbar:
+      'undo redo | formatselect | bold italic | alignleft aligncenter alignright | bullist numlist | link unlink',
+    // 链接配置
+    link_title: false,
+    link_default_target: '_blank',
     images_upload_handler: (blobInfo: any) =>
       new Promise((resolve, reject) => {
         const formData = new FormData();
