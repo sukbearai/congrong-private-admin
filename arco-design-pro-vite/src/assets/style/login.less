@@ -1,0 +1,40 @@
+// 登录页样式优化
+
+// 确保html和body标签也是全屏的
+html, body, #app {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+// 修复iOS设备上的100vh问题
+@media screen and (max-width: 768px) {
+  /* iOS上的Safari浏览器对100vh的处理有问题，这里使用fix方案 */
+  @supports (-webkit-touch-callout: none) {
+    .container {
+      height: -webkit-fill-available !important;
+    }
+  }
+}
+
+// 背景图片加载失败的备用样式
+.banner-inner {
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(163.85deg, #1d2129 0%, #00308f 100%);
+    opacity: 0;
+    z-index: -1;
+    transition: opacity 0.3s;
+  }
+  
+  &.bg-error::before {
+    opacity: 1;
+  }
+}

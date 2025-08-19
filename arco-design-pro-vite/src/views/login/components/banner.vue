@@ -1,7 +1,12 @@
 <template>
   <div class="banner">
-    <div class="banner-inner">
-      <!-- <a-carousel class="carousel" animation-name="fade">
+    <div
+      ref="bannerRef"
+      class="banner-inner"
+      :class="{ 'bg-error': bgLoadError }"
+    >
+      <!-- 如果需要轮播功能，可以取消注释以下代码
+      <a-carousel class="carousel" animation-name="fade">
         <a-carousel-item v-for="item in carouselItem" :key="item.slogan">
           <div :key="item.slogan" class="carousel-item">
             <div class="carousel-title">{{ item.slogan }}</div>
@@ -9,23 +14,54 @@
             <img class="carousel-image" :src="item.image" />
           </div>
         </a-carousel-item>
-      </a-carousel> -->
+      </a-carousel>
+      -->
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-  // import { computed } from 'vue';
+  import { ref, onMounted, onUnmounted } from 'vue';
   // import bannerImage from '@/assets/images/login-banner.png';
 
-  // const carouselItem = computed(() => [
-  //   {
-  //     slogan: 'AI中医问诊',
-  //     subSlogan:
-  //       '致力于中医标准化、国际化，赋能中医药大健康产业，让基层也能享受到高品质中医服务',
-  //     image: bannerImage,
-  //   },
-  // ]);
+  const bannerRef = ref<HTMLElement | null>(null);
+  const bgLoadError = ref(false);
+
+  // 检测背景图是否成功加载
+  const checkBackgroundImageLoaded = () => {
+    if (!bannerRef.value) return;
+
+    const url = getComputedStyle(bannerRef.value).backgroundImage.match(
+      /url\(["']?([^"']*)["']?\)/
+    )?.[1];
+
+    if (url) {
+      const img = new Image();
+      img.onload = () => {
+        bgLoadError.value = false;
+      };
+      img.onerror = () => {
+        bgLoadError.value = true;
+      };
+      img.src = url;
+    }
+  };
+
+  // 监听窗口大小变化
+  const handleResize = () => {
+    if (bannerRef.value) {
+      // 可以在这里添加任何需要根据窗口大小变化的逻辑
+    }
+  };
+
+  onMounted(() => {
+    checkBackgroundImageLoaded();
+    window.addEventListener('resize', handleResize);
+  });
+
+  onUnmounted(() => {
+    window.removeEventListener('resize', handleResize);
+  });
 </script>
 
 <style lang="less" scoped>
@@ -33,11 +69,34 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 100%;
+    height: 100%;
 
     &-inner {
-      flex: 1;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
       height: 100%;
-      background: url('@/assets/images/bg.png') no-repeat center 0 / 100% 100%;
+      background: url('@/assets/images/bg.png') no-repeat center center / cover;
+      background-attachment: fixed; /* 固定背景，滚动时保持位置 */
+    }
+  }
+
+  @media (max-width: 768px) {
+    .banner {
+      &-inner {
+        background-position: center center;
+      }
+    }
+  }
+
+  @media (max-width: 480px) {
+    .banner {
+      &-inner {
+        /* 在特小屏幕上可能需要调整背景位置 */
+        background-position: 35% center;
+      }
     }
   }
 

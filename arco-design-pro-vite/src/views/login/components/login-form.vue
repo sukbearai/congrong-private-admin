@@ -133,7 +133,9 @@
 <style lang="less" scoped>
   .login-form {
     &-wrapper {
-      width: 320px;
+      width: 100%;
+      max-width: 360px;
+      padding: 20px;
     }
 
     &-title {
