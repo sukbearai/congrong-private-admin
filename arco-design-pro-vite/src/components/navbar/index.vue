@@ -127,10 +127,10 @@
 
   const toggleTheme = useToggle(isDark);
 
+  // 不再根据系统偏好自动切换到暗黑模式
   onMounted(() => {
-    toggleTheme(
-      Boolean(window.matchMedia('(prefers-color-scheme: dark)').matches)
-    );
+    // 强制使用亮色模式
+    toggleTheme(false);
   });
 
   const goToUserProfile = () => {

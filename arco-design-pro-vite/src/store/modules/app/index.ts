@@ -29,14 +29,11 @@ const useAppStore = defineStore('app', {
     },
 
     // Change theme color
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     toggleTheme(dark: boolean) {
-      if (dark) {
-        this.theme = 'dark';
-        document.body.setAttribute('arco-theme', 'dark');
-      } else {
-        this.theme = 'light';
-        document.body.removeAttribute('arco-theme');
-      }
+      // 禁用暗黑模式，始终使用亮色模式
+      this.theme = 'light';
+      document.body.removeAttribute('arco-theme');
     },
     toggleDevice(device: string) {
       this.device = device;
