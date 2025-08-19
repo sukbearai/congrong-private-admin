@@ -36,12 +36,8 @@
     width: '100%',
     height: 300,
     resize: true,
-    content_css: window.matchMedia('(prefers-color-scheme: dark)').matches
-      ? 'dark'
-      : 'default',
-    skin: window.matchMedia('(prefers-color-scheme: dark)').matches
-      ? 'oxide-dark'
-      : 'oxide',
+    content_css: 'default',
+    skin: 'oxide',
     images_upload_handler: (blobInfo: any) =>
       new Promise((resolve, reject) => {
         const formData = new FormData();
