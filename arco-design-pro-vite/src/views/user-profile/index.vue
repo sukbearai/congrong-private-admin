@@ -84,7 +84,7 @@
     id: userStore.id,
     nickname: userStore.nickname,
     phone: userStore.phone,
-    password: '',
+    password: userStore.password, // 添加密码字段
     role: userStore.role,
     deviceIds: userStore.deviceIds,
   });
@@ -94,7 +94,7 @@
     id: userStore.id,
     nickname: userStore.nickname,
     phone: userStore.phone,
-    password: '',
+    password: userStore.password,
     role: userStore.role,
     deviceIds: userStore.deviceIds,
   };
@@ -222,7 +222,7 @@
       id: userStore.id,
       nickname: userStore.nickname,
       phone: userStore.phone,
-      password: '',
+      password: userStore.password,
       role: userStore.role,
       deviceIds: userStore.deviceIds,
     });
@@ -231,7 +231,7 @@
       id: userStore.id,
       nickname: userStore.nickname,
       phone: userStore.phone,
-      password: '',
+      password: userStore.password,
       role: userStore.role,
       deviceIds: userStore.deviceIds,
     });
