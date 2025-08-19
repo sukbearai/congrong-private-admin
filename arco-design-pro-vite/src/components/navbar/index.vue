@@ -68,6 +68,14 @@
           </a-avatar>
           <template #content>
             <a-doption>
+              <a-space @click="goToUserProfile">
+                <icon-user />
+                <span>
+                  {{ $t('messageBox.userProfile') }}
+                </span>
+              </a-space>
+            </a-doption>
+            <a-doption>
               <a-space @click="handleLogout">
                 <icon-export />
                 <span>
@@ -88,7 +96,10 @@
   import { useAppStore, useUserStore } from '@/store';
   import useUser from '@/hooks/user';
   import Menu from '@/components/menu/index.vue';
+  import { useRouter } from 'vue-router';
+  import { IconUser, IconExport } from '@arco-design/web-vue/es/icon';
 
+  const router = useRouter();
   const appStore = useAppStore();
   const userStore = useUserStore();
   const { logout } = useUser();
@@ -121,6 +132,10 @@
       Boolean(window.matchMedia('(prefers-color-scheme: dark)').matches)
     );
   });
+
+  const goToUserProfile = () => {
+    router.push('/user-profile');
+  };
 
   const handleLogout = () => {
     logout();

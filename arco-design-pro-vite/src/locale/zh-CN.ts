@@ -4,6 +4,7 @@ import localeLogin from '@/views/login/locale/zh-CN';
 import localeSettings from './zh-CN/settings';
 
 export default {
+  'messageBox.userProfile': '个人信息',
   'messageBox.logout': '退出',
   'menu.dashboard': '设备-产品内容',
   'menu.server.dashboard': '仪表盘-服务端',
@@ -52,6 +53,22 @@ export default {
   'userManagement.role.admin': '旗舰门店',
   'userManagement.actions.edit': '编辑',
   'userManagement.actions.delete': '删除',
+
+  // 用户信息页面
+  'menu.userProfile': '个人信息',
+  'userProfile.title': '个人信息',
+  'userProfile.form.nickname': '姓名',
+  'userProfile.form.nicknamePlaceholder': '请输入姓名',
+  'userProfile.form.phone': '联系电话',
+  'userProfile.form.phonePlaceholder': '请输入联系电话',
+  'userProfile.form.password': '修改密码',
+  'userProfile.form.passwordPlaceholder': '请输入新密码',
+  'userProfile.form.passwordHelp': '如果不需要修改密码，请保持为空',
+  'userProfile.form.role': '角色',
+  'userProfile.form.deviceIds': '关联设备',
+  'userProfile.form.deviceIdsPlaceholder': '关联设备ID',
+  'userProfile.form.submit': '保存',
+  'userProfile.form.reset': '重置',
   ...localeSettings,
   ...localeLogin,
 };

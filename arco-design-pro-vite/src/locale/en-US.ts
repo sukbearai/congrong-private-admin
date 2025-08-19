@@ -4,6 +4,7 @@ import localeLogin from '@/views/login/locale/en-US';
 import localeSettings from './en-US/settings';
 
 export default {
+  'messageBox.userProfile': 'Profile',
   'messageBox.logout': 'logout',
   'menu.dashboard': 'Dashboard',
   'menu.server.dashboard': 'Dashboard-Server',
@@ -50,6 +51,24 @@ export default {
   'userManagement.role.admin': 'Flagship Store',
   'userManagement.actions.edit': 'Edit',
   'userManagement.actions.delete': 'Delete',
+
+  // User Profile Page
+  'menu.userProfile': 'User Profile',
+  'userProfile.title': 'User Profile',
+  'userProfile.form.nickname': 'Name',
+  'userProfile.form.nicknamePlaceholder': 'Please enter your name',
+  'userProfile.form.phone': 'Contact Phone',
+  'userProfile.form.phonePlaceholder': 'Please enter contact phone',
+  'userProfile.form.password': 'Change Password',
+  'userProfile.form.passwordPlaceholder':
+    'Leave blank to keep current password',
+  'userProfile.form.passwordHelp':
+    'Leave blank if you do not want to change your password',
+  'userProfile.form.role': 'Role',
+  'userProfile.form.deviceIds': 'Associated Devices',
+  'userProfile.form.deviceIdsPlaceholder': 'Associated Device IDs',
+  'userProfile.form.submit': 'Save',
+  'userProfile.form.reset': 'Reset',
   ...localeSettings,
   ...localeLogin,
 };
