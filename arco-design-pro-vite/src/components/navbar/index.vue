@@ -60,12 +60,17 @@
       </li> -->
       <li>
         <a-dropdown trigger="click">
-          <a-avatar
-            :size="32"
-            :style="{ marginRight: '8px', cursor: 'pointer' }"
-          >
-            <img alt="avatar" :src="avatar" />
-          </a-avatar>
+          <div class="user-info">
+            <a-avatar
+              :size="32"
+              :style="{ marginRight: '8px', cursor: 'pointer' }"
+            >
+              <img alt="avatar" :src="avatar" />
+            </a-avatar>
+            <span class="username"
+              >你好，{{ userStore.nickname || '用户' }}</span
+            >
+          </div>
           <template #content>
             <a-doption>
               <a-space @click="goToUserProfile">
@@ -179,6 +184,17 @@
     a {
       color: var(--color-text-1);
       text-decoration: none;
+    }
+    .user-info {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+
+      .username {
+        margin-left: 8px;
+        font-size: 14px;
+        color: var(--color-text-1);
+      }
     }
     .nav-btn {
       border-color: rgb(var(--gray-2));
