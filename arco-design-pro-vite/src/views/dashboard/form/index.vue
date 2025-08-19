@@ -1,6 +1,9 @@
 <template>
   <div class="container">
-    <a-card title="产品信息编辑" :bordered="false">
+    <a-card
+      :title="isEditMode ? '编辑产品信息' : '产品信息编辑'"
+      :bordered="false"
+    >
       <a-form :model="formData" layout="vertical" :auto-label-width="true">
         <a-form-item
           label="产品详情"
@@ -57,14 +60,18 @@
 <script lang="ts" setup>
   import { ref, reactive, onMounted } from 'vue';
   import { Message } from '@arco-design/web-vue';
-  import { useRouter } from 'vue-router';
+  import { useRouter, useRoute } from 'vue-router';
   import RichText from '@/components/rich-text/index.vue';
-  import { submitProductUpdate } from '@/api/dashboard';
+  import { submitProductUpdate, getProductList } from '@/api/dashboard';
   import { useUserStore } from '@/store';
 
   const router = useRouter();
+  const route = useRoute();
   const userStore = useUserStore();
   const submitLoading = ref(false);
+  const isEditMode = ref(false);
+  const productId = ref<number | null>(null);
+  const loading = ref(false);
 
   // 体质选项
   const constitutionOptions = [
@@ -110,7 +117,7 @@
 
       submitLoading.value = true;
 
-      const response: any = await submitProductUpdate({
+      const submitData = {
         title: '甄选产品',
         content: formData.content,
         constitutions: formData.constitutions.join(','),
@@ -119,10 +126,17 @@
           'https://maixiangjk.oss-cn-hangzhou.aliyuncs.com/7a1JpA_HGh-abAekbeV17',
         uncheckedImg:
           'https://maixiangjk.oss-cn-hangzhou.aliyuncs.com/k94qBf-oYk-pVopLDZzU8',
-      });
+      };
+
+      // 如果是编辑模式，添加产品ID
+      if (isEditMode.value && productId.value) {
+        Object.assign(submitData, { id: productId.value });
+      }
+
+      const response: any = await submitProductUpdate(submitData);
 
       if (response.code === 0) {
-        Message.success('提交成功');
+        Message.success(isEditMode.value ? '更新成功' : '提交成功');
         // 重置表单
         handleReset();
         // 跳转到产品列表页;
@@ -130,19 +144,67 @@
           router.push({ name: 'ProductList' });
         }, 300);
       } else {
-        Message.error(response.message || '提交失败');
+        Message.error(
+          response.message || (isEditMode.value ? '更新失败' : '提交失败')
+        );
       }
     } catch (error) {
-      Message.error('提交失败，请稍后重试');
+      Message.error(
+        isEditMode.value ? '更新失败，请稍后重试' : '提交失败，请稍后重试'
+      );
     } finally {
       submitLoading.value = false;
     }
   };
 
-  // 组件挂载时获取用户信息
+  // 获取产品详情
+  const fetchProductDetail = async (id: number) => {
+    try {
+      loading.value = true;
+      const response = await getProductList({
+        deviceIds: userStore.deviceIds || '',
+      });
+
+      if (response.data && response.data.list) {
+        const product = response.data.list.find((item) => item.id === id);
+        if (product) {
+          // 回填表单数据
+          formData.content = product.content;
+          if (product.constitutions) {
+            formData.constitutions = product.constitutions.split(',');
+          }
+          return true;
+        }
+
+        Message.error('未找到产品信息');
+        return false;
+      }
+      return false;
+    } catch (error) {
+      Message.error('获取产品信息失败');
+      return false;
+    } finally {
+      loading.value = false;
+    }
+  };
+
+  // 组件挂载时获取用户信息和产品信息（如果是编辑模式）
   onMounted(async () => {
     try {
       await userStore.info();
+
+      // 检查是否是编辑模式
+      const id = route.query.id ? Number(route.query.id) : null;
+      const editMode = route.query.editMode === 'true';
+
+      if (id && editMode) {
+        isEditMode.value = true;
+        productId.value = id;
+        const success = await fetchProductDetail(id);
+        if (!success) {
+          router.push({ name: 'ProductList' });
+        }
+      }
     } catch (error) {
       // 静默处理用户信息获取失败
     }

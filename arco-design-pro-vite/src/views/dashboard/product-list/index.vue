@@ -35,11 +35,14 @@
               </a-space>
             </template>
           </a-table-column>
-          <a-table-column title="操作" :width="150">
+          <a-table-column title="操作" :width="200">
             <template #cell="{ record }">
               <a-space>
                 <a-button type="text" size="small" @click="viewDetail(record)">
                   查看
+                </a-button>
+                <a-button type="text" size="small" @click="handleEdit(record)">
+                  编辑
                 </a-button>
                 <a-button
                   type="text"
@@ -161,6 +164,17 @@
   // 跳转到创建页面
   const goToCreate = () => {
     router.push({ name: 'Workplace' });
+  };
+
+  // 编辑产品
+  const handleEdit = (record: ProductListItem) => {
+    router.push({
+      name: 'Workplace',
+      query: {
+        id: record.id,
+        editMode: 'true',
+      },
+    });
   };
 
   // 查看详情
