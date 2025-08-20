@@ -23,8 +23,16 @@
           <a-table-column title="标题" data-index="title" />
           <a-table-column title="内容" data-index="content" />
           <a-table-column title="微信链接" data-index="wechatUrl" />
-          <a-table-column title="创建时间" data-index="createdAt" />
-          <a-table-column title="更新时间" data-index="updatedAt" />
+          <a-table-column title="创建时间" :width="160">
+            <template #cell="{ record }">
+              {{ dayjs(record.createdAt).format('YYYY-MM-DD HH:mm:ss') }}
+            </template>
+          </a-table-column>
+          <a-table-column title="更新时间" :width="160">
+            <template #cell="{ record }">
+              {{ dayjs(record.updatedAt).format('YYYY-MM-DD HH:mm:ss') }}
+            </template>
+          </a-table-column>
           <a-table-column title="操作" :width="150">
             <template #cell="{ record }">
               <a-space>
@@ -131,6 +139,7 @@
   import { ref, reactive, onMounted } from 'vue';
   import { Message, Modal } from '@arco-design/web-vue';
   import { IconPlus } from '@arco-design/web-vue/es/icon';
+  import dayjs from 'dayjs';
   import {
     getAnnouncementList,
     createAnnouncement,
@@ -215,7 +224,16 @@
       // 修复 response 多一层 data 的问题
       const resData = response.data;
       if (resData && resData.list) {
-        announcementList.value = resData.list || [];
+        announcementList.value =
+          resData.list.map((item) => {
+            item.createdAt = dayjs(item.createdAt).format(
+              'YYYY-MM-DD HH:mm:ss'
+            );
+            item.updatedAt = dayjs(item.updatedAt).format(
+              'YYYY-MM-DD HH:mm:ss'
+            );
+            return item;
+          }) || [];
         pagination.total = resData.total || 0;
       }
     } catch (e) {
