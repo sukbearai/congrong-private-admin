@@ -4,6 +4,8 @@ import localeLogin from '@/views/login/locale/zh-CN';
 import localeSettings from './zh-CN/settings';
 
 export default {
+  'menu.announcementManagement': '公告管理',
+  'menu.announcementManagement.list': '公告列表',
   'messageBox.userProfile': '个人信息',
   'messageBox.logout': '退出',
   'menu.dashboard': '设备-产品内容',

@@ -4,6 +4,8 @@ import localeLogin from '@/views/login/locale/en-US';
 import localeSettings from './en-US/settings';
 
 export default {
+  'menu.announcementManagement': 'Announcement Management',
+  'menu.announcementManagement.list': 'Announcement List',
   'messageBox.userProfile': 'Profile',
   'messageBox.logout': 'logout',
   'menu.dashboard': 'Dashboard',
