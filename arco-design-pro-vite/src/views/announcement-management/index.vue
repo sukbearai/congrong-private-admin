@@ -62,23 +62,24 @@
           <a-input
             v-model="createForm.title"
             placeholder="请输入公告标题"
-            max-length="100"
+            :max-length="100"
             show-word-limit
           />
         </a-form-item>
         <a-form-item field="content" label="内容">
-          <a-input
+          <a-textarea
             v-model="createForm.content"
             placeholder="请输入公告内容"
-            max-length="500"
+            :max-length="500"
             show-word-limit
+            auto-size
           />
         </a-form-item>
         <a-form-item field="wechatUrl" label="微信链接">
           <a-input
             v-model="createForm.wechatUrl"
             placeholder="请输入微信链接"
-            max-length="200"
+            :max-length="200"
           />
         </a-form-item>
       </a-form>
@@ -101,23 +102,24 @@
           <a-input
             v-model="editForm.title"
             placeholder="请输入公告标题"
-            max-length="100"
+            :max-length="100"
             show-word-limit
           />
         </a-form-item>
         <a-form-item field="content" label="内容">
-          <a-input
+          <a-textarea
             v-model="editForm.content"
             placeholder="请输入公告内容"
-            max-length="500"
+            :max-length="500"
             show-word-limit
+            auto-size
           />
         </a-form-item>
         <a-form-item field="wechatUrl" label="微信链接">
           <a-input
             v-model="editForm.wechatUrl"
             placeholder="请输入微信链接"
-            max-length="200"
+            :max-length="200"
           />
         </a-form-item>
       </a-form>
@@ -148,7 +150,7 @@
 
   const pagination = reactive({
     current: 1,
-    pageSize: 10,
+    pageSize: 100,
     total: 0,
     showTotal: true,
     showPageSize: true,
@@ -210,9 +212,11 @@
         page: pagination.current,
         pageSize: pagination.pageSize,
       });
-      if (response.data && response.data.data) {
-        announcementList.value = response.data.data.list || [];
-        pagination.total = response.data.data.total || 0;
+      // 修复 response 多一层 data 的问题
+      const resData = response.data;
+      if (resData && resData.list) {
+        announcementList.value = resData.list || [];
+        pagination.total = resData.total || 0;
       }
     } catch (e) {
       // 可以根据需要添加错误提示
@@ -235,7 +239,11 @@
   const handleCreateAnnouncement = async () => {
     try {
       const valid = await createFormRef.value?.validate();
-      if (!valid) return;
+
+      if (valid) {
+        showCreateModal.value = true;
+        return;
+      }
       const response = await createAnnouncement(createForm);
       if (response.data) {
         Message.success('公告创建成功');
@@ -261,7 +269,10 @@
   const handleUpdateAnnouncement = async () => {
     try {
       const valid = await editFormRef.value?.validate();
-      if (!valid) return;
+      if (valid) {
+        showEditModal.value = true;
+        return;
+      }
       const response = await updateAnnouncement(editForm);
       if (response.data) {
         Message.success('公告更新成功');
@@ -283,10 +294,12 @@
           const response = await deleteAnnouncement({ id: record.id });
           if (response.data) {
             Message.success('公告删除成功');
-            fetchAnnouncementList();
           }
         } catch (e) {
           // 可以根据需要添加错误提示
+        } finally {
+          // 无论成功失败都刷新列表，防止数据不同步
+          fetchAnnouncementList();
         }
       },
     });

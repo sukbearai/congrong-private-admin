@@ -38,14 +38,12 @@ export interface AnnouncementListParams {
   pageSize?: number;
 }
 
-// 公告列表返回结构
+// 公告列表返回结构（修正：list 和 total 直接在 data 下）
 export interface AnnouncementListResponse {
   code: number;
   message: string;
-  data: {
-    list: AnnouncementItem[];
-    total: number;
-  };
+  list: AnnouncementItem[];
+  total: number;
   timestamp: number;
 }
 
