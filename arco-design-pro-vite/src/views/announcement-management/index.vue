@@ -62,7 +62,7 @@
           <a-input
             v-model="createForm.title"
             placeholder="请输入公告标题"
-            :max-length="100"
+            :max-length="50"
             show-word-limit
           />
         </a-form-item>
@@ -70,7 +70,7 @@
           <a-textarea
             v-model="createForm.content"
             placeholder="请输入公告内容"
-            :max-length="500"
+            :max-length="100"
             show-word-limit
             auto-size
           />
@@ -79,7 +79,7 @@
           <a-input
             v-model="createForm.wechatUrl"
             placeholder="请输入微信链接"
-            :max-length="200"
+            :max-length="150"
           />
         </a-form-item>
       </a-form>
@@ -102,7 +102,7 @@
           <a-input
             v-model="editForm.title"
             placeholder="请输入公告标题"
-            :max-length="100"
+            :max-length="50"
             show-word-limit
           />
         </a-form-item>
@@ -110,7 +110,7 @@
           <a-textarea
             v-model="editForm.content"
             placeholder="请输入公告内容"
-            :max-length="500"
+            :max-length="100"
             show-word-limit
             auto-size
           />
@@ -119,7 +119,7 @@
           <a-input
             v-model="editForm.wechatUrl"
             placeholder="请输入微信链接"
-            :max-length="200"
+            :max-length="150"
           />
         </a-form-item>
       </a-form>

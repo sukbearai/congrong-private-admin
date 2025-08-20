@@ -42,6 +42,8 @@
       </a-layout>
     </a-layout>
   </a-layout>
+  <!-- 悬浮公告广告位 -->
+  <Announcement />
 </template>
 
 <script lang="ts" setup>
@@ -54,6 +56,7 @@
   import TabBar from '@/components/tab-bar/index.vue';
   import usePermission from '@/hooks/permission';
   import useResponsive from '@/hooks/responsive';
+  import Announcement from '@/components/announcement/index.vue';
   import PageLayout from './page-layout.vue';
 
   const isInit = ref(false);
