@@ -51,12 +51,13 @@
       width: 100%;
       height: 100%;
       z-index: -1;
+      background-color: #1d1f28; /* 添加背景色，控制留白的颜色 */
     }
 
     &-bg-img {
       width: 100%;
       height: 100%;
-      object-fit: contain; /* 确保图片覆盖整个容器 */
+      object-fit: contain; /* 确保图片填充整个容器，可能会裁剪部分内容 */
       object-position: center center;
     }
 
@@ -66,7 +67,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background-color: rgba(0, 0, 0, 0.2); /* 轻微的暗色蒙层 */
+      // background-color: rgba(0, 0, 0, 0.2); /* 轻微的暗色蒙层 */
     }
   }
 
