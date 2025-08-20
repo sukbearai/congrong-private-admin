@@ -1,102 +1,72 @@
 <template>
   <div class="banner">
-    <div
-      ref="bannerRef"
-      class="banner-inner"
-      :class="{ 'bg-error': bgLoadError }"
-    >
-      <!-- 如果需要轮播功能，可以取消注释以下代码
-      <a-carousel class="carousel" animation-name="fade">
-        <a-carousel-item v-for="item in carouselItem" :key="item.slogan">
-          <div :key="item.slogan" class="carousel-item">
-            <div class="carousel-title">{{ item.slogan }}</div>
-            <div class="carousel-sub-title">{{ item.subSlogan }}</div>
-            <img class="carousel-image" :src="item.image" />
-          </div>
-        </a-carousel-item>
-      </a-carousel>
-      -->
+    <div class="banner-background">
+      <!-- 这里使用多分辨率背景图方案 -->
+      <picture>
+        <!-- 超宽屏 (21:9) -->
+        <source
+          media="(min-aspect-ratio: 21/9)"
+          srcset="@/assets/images/bg.jpg"
+        />
+        <!-- 宽屏 (16:9) -->
+        <source
+          media="(min-aspect-ratio: 16/9)"
+          srcset="@/assets/images/bg.jpg"
+        />
+        <!-- 标准屏 (4:3) -->
+        <source
+          media="(min-aspect-ratio: 4/3)"
+          srcset="@/assets/images/bg.jpg"
+        />
+        <!-- 竖屏设备 (<4:3) -->
+        <source
+          media="(max-aspect-ratio: 4/3)"
+          srcset="@/assets/images/bg.jpg"
+        />
+        <!-- 默认图像 -->
+        <img class="banner-bg-img" src="@/assets/images/bg.jpg" alt="背景图" />
+      </picture>
+
+      <!-- 背景蒙层效果 -->
+      <div class="banner-overlay"></div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-  import { ref, onMounted, onUnmounted } from 'vue';
-  // import bannerImage from '@/assets/images/login-banner.png';
-
-  const bannerRef = ref<HTMLElement | null>(null);
-  const bgLoadError = ref(false);
-
-  // 检测背景图是否成功加载
-  const checkBackgroundImageLoaded = () => {
-    if (!bannerRef.value) return;
-
-    const url = getComputedStyle(bannerRef.value).backgroundImage.match(
-      /url\(["']?([^"']*)["']?\)/
-    )?.[1];
-
-    if (url) {
-      const img = new Image();
-      img.onload = () => {
-        bgLoadError.value = false;
-      };
-      img.onerror = () => {
-        bgLoadError.value = true;
-      };
-      img.src = url;
-    }
-  };
-
-  // 监听窗口大小变化
-  const handleResize = () => {
-    if (bannerRef.value) {
-      // 可以在这里添加任何需要根据窗口大小变化的逻辑
-    }
-  };
-
-  onMounted(() => {
-    checkBackgroundImageLoaded();
-    window.addEventListener('resize', handleResize);
-  });
-
-  onUnmounted(() => {
-    window.removeEventListener('resize', handleResize);
-  });
+  // 不需要特殊逻辑，只渲染背景图
 </script>
 
 <style lang="less" scoped>
   .banner {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    position: relative;
     width: 100%;
     height: 100%;
+    overflow: hidden;
 
-    &-inner {
+    &-background {
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: url('@/assets/images/bg.png') no-repeat center center / cover;
-      background-attachment: fixed; /* 固定背景，滚动时保持位置 */
+      z-index: -1;
     }
-  }
 
-  @media (max-width: 768px) {
-    .banner {
-      &-inner {
-        background-position: center center;
-      }
+    &-bg-img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain; /* 确保图片覆盖整个容器 */
+      object-position: center center;
     }
-  }
 
-  @media (max-width: 480px) {
-    .banner {
-      &-inner {
-        /* 在特小屏幕上可能需要调整背景位置 */
-        background-position: 35% center;
-      }
+    &-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.2); /* 轻微的暗色蒙层 */
     }
   }
 

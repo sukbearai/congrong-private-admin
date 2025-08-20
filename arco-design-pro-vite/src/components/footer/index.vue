@@ -1,5 +1,5 @@
 <template>
-  <a-layout-footer class="footer">从容科技</a-layout-footer>
+  <a-layout-footer class="footer">从容数智中医</a-layout-footer>
 </template>
 
 <script lang="ts" setup></script>
