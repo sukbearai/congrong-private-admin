@@ -1,6 +1,6 @@
 <template>
   <div class="chat-textarea">
-    <div class="tabs-area"
+    <!-- <div class="tabs-area"
       ><a-tag
         :color="isTagChecked ? '#3c7eff59' : ''"
         bordered
@@ -9,7 +9,7 @@
       >
         DeepSeek-R1
       </a-tag></div
-    >
+    > -->
     <a-textarea
       :model-value="modelValue"
       :placeholder="placeholder"
@@ -33,12 +33,12 @@
               @click="$emit('send')"
             />
 
-            <icon-pause-circle-fill
+            <!-- <icon-pause-circle-fill
               v-if="isPlaying"
               :size="20"
               style="cursor: pointer"
               @click="$emit('stop')"
-            />
+            /> -->
           </a-space>
         </div>
       </template>
@@ -47,7 +47,7 @@
 </template>
 
 <script lang="ts" setup>
-  import { useToggle } from '@vueuse/core';
+  // import { useToggle } from '@vueuse/core';
 
   interface Props {
     modelValue?: string;
@@ -65,26 +65,26 @@
   }
 
   withDefaults(defineProps<Props>(), {
-    placeholder: '今天，我能为你做什么呢？',
+    placeholder: '请提问中医学和健康问题',
     allowClear: true,
     isPlaying: false,
   });
 
   const emit = defineEmits<Emits>();
 
-  const [isTagChecked, isTagToggle] = useToggle();
+  // const [isTagChecked, isTagToggle] = useToggle();
 
-  function onToggle() {
-    isTagToggle();
-    // 这里可以添加切换模型的逻辑
-    if (isTagChecked.value) {
-      // eslint-disable-next-line vue/custom-event-name-casing
-      emit('toggle-model', 'deepseek-reasoner');
-    } else {
-      // eslint-disable-next-line vue/custom-event-name-casing
-      emit('toggle-model', 'deepseek-chat');
-    }
-  }
+  // function onToggle() {
+  //   isTagToggle();
+  //   // 这里可以添加切换模型的逻辑
+  //   if (isTagChecked.value) {
+  //     // eslint-disable-next-line vue/custom-event-name-casing
+  //     emit('toggle-model', 'deepseek-reasoner');
+  //   } else {
+  //     // eslint-disable-next-line vue/custom-event-name-casing
+  //     emit('toggle-model', 'deepseek-chat');
+  //   }
+  // }
 
   const handleKeydown = (event: KeyboardEvent) => {
     const isMobile = () => {

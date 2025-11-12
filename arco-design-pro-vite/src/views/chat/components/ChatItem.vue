@@ -8,12 +8,12 @@
     <div class="chat-content">
       <!-- 如果是 AI 回复且有 reasoning，显示思考过程 -->
       <div
-        v-if="item.role === 'assistant' && item.renderedReasoning?.trim()"
+        v-if="item.role === 'assistant' && item.reasoning?.trim()"
         class="reasoning-section"
       >
-        <details class="reasoning-details" open>
+        <details class="reasoning-details">
           <summary class="reasoning-summary">💭 推理过程</summary>
-          <div class="reasoning-content" v-html="item.renderedReasoning"></div>
+          <div class="reasoning-content">{{ item.reasoning }}</div>
         </details>
       </div>
       <!-- 主要回复内容 -->
@@ -39,7 +39,7 @@
       role: 'user' | 'assistant';
       content: string;
       renderedContent: string;
-      renderedReasoning?: string | null;
+      reasoning?: string;
       time: string;
       icon: string;
     };

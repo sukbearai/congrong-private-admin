@@ -34,5 +34,6 @@
     "@commitlint/config-conventional": "^12.0.1",
     "@types/markdown-it": "^14.1.2",
     "husky": "^8.0.3"
-  }
+  },
+  "packageManager": "pnpm@8.15.1+sha1.8adba2d20330c02d3856e18c4eb3819d1d3ca6aa"
 }

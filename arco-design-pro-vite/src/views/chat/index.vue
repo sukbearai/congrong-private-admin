@@ -2,7 +2,7 @@
   <div ref="pageEl" class="pages">
     <!-- 初始场景：用户第一次打开页面时显示 -->
     <div v-if="!hasMessages" class="scene-one">
-      <div class="greeting">嗨👌,朋友。</div>
+      <div class="greeting">中医大师AI</div>
       <div class="scene">
         <ChatTextArea
           ref="chatTextAreaRef"
@@ -47,18 +47,24 @@
 
 <script lang="ts" setup>
   import { computed, onBeforeMount, onMounted, ref, watch } from 'vue';
-  // import { useAppStore } from '@/store';
   import { useElementSize, useWindowSize } from '@vueuse/core';
-  import { useChat } from '@ai-sdk/vue';
   import { Message } from '@arco-design/web-vue';
   import MarkdownIt from 'markdown-it';
   import userImg from '@/assets/images/user.png';
   import botImg from '@/assets/images/bot.png';
   import Shiki from '@shikijs/markdown-it';
   import { bundledLanguages } from 'shiki';
+  import { aiMedsciChat } from '@/api/ai-chat';
   import ChatCard from './components/ChatCard.vue';
   import ChatTextArea from './components/ChatTextArea.vue';
   import ChatItem from './components/ChatItem.vue';
+
+  interface MessageItem {
+    id: string;
+    role: 'user' | 'assistant';
+    content: string;
+    reasoning?: string;
+  }
 
   async function initShikiInstance() {
     const md = MarkdownIt();
@@ -125,26 +131,11 @@
   const model = ref('deepseek-chat');
   const md = ref<MarkdownIt | null>(null);
 
-  const {
-    messages,
-    input,
-    handleSubmit,
-    stop,
-    isLoading,
-    setMessages,
-    status,
-  } = useChat({
-    api: 'https://shebei.congrongtech.cn/api/ai/dialogue',
-    body: computed(() => ({
-      model: model.value,
-    })),
-    onError(error) {
-      Message.error({
-        content: `网络错误: ${error.message || '未知错误'}`,
-        duration: 5000,
-      });
-    },
-  });
+  const messages = ref<MessageItem[]>([]);
+  const input = ref('');
+  const isLoading = ref(false);
+  const conversationId = ref('');
+  const status = ref<'idle' | 'submitted'>('idle');
 
   const formattedMessages = computed(() => {
     const formatted = messages.value.map((message, index) => ({
@@ -159,9 +150,6 @@
       renderedContent: md.value
         ?.render(message.content)
         .replace(/<hr\s*\/?>/gi, ''),
-      renderedReasoning: message.reasoning
-        ? md.value?.render(message.reasoning).replace(/<hr\s*\/?>/gi, '')
-        : null,
     }));
 
     // 如果正在加载且有消息，添加思考中的临时消息
@@ -171,7 +159,6 @@
         role: 'assistant' as const,
         content: '模型思考中...',
         renderedContent: null,
-        renderedReasoning: null,
         time: new Date().toLocaleTimeString('zh-CN', {
           hour: '2-digit',
           minute: '2-digit',
@@ -186,6 +173,77 @@
 
   const hasMessages = computed(() => messages.value.length > 0);
 
+  const sendMessage = async () => {
+    if (!input.value?.trim() || isLoading.value) return;
+
+    const userMessage: MessageItem = {
+      id: `user-${Date.now()}`,
+      role: 'user',
+      content: input.value,
+    };
+
+    messages.value.push(userMessage);
+    const currentInput = input.value;
+    input.value = '';
+    isLoading.value = true;
+    status.value = 'submitted';
+
+    try {
+      const response = await aiMedsciChat({
+        inputs: {},
+        query: currentInput,
+        response_mode: 'blocking',
+        conversation_id: conversationId.value,
+        user: '外部用户',
+        files: [],
+      });
+
+      const { data } = response;
+
+      if (data.conversation_id && !conversationId.value) {
+        conversationId.value = data.conversation_id;
+      }
+
+      if (data.answer) {
+        // 使用正则替换移除<...>标签包裹的内容
+        const answer = data.answer
+          .replace(/<[^>]*>\n[^<]*<\/[^>]*>/gs, '')
+          .trim();
+
+        const assistantMessage: MessageItem = {
+          id: data.message_id || `assistant-${Date.now()}`,
+          role: 'assistant',
+          content: answer,
+        };
+        messages.value.push(assistantMessage);
+      } else {
+        const emptyMessage: MessageItem = {
+          id: `assistant-${Date.now()}`,
+          role: 'assistant',
+          content: '抱歉，我无法处理您的请求。',
+        };
+        messages.value.push(emptyMessage);
+      }
+    } catch (error) {
+      Message.error({
+        content: `网络错误: ${(error as Error).message || '未知错误'}`,
+        duration: 5000,
+      });
+    } finally {
+      isLoading.value = false;
+      status.value = 'idle';
+    }
+  };
+
+  const stop = () => {
+    isLoading.value = false;
+    status.value = 'idle';
+  };
+
+  const setMessages = (newMessages: MessageItem[]) => {
+    messages.value = newMessages;
+  };
+
   // 兼容移动端vh\vw
   const updatePageSize = async () => {
     if (pageEl.value) {
@@ -198,9 +256,7 @@
   watch([windowWidth, windowHeight], updatePageSize);
 
   function onSend() {
-    if (!input.value?.trim() || isLoading.value) return;
-    handleSubmit();
-    input.value = '';
+    sendMessage();
   }
 
   function onStop() {
@@ -213,7 +269,7 @@
     }
     setMessages([]);
     input.value = '';
-    model.value = 'deepseek-chat';
+    conversationId.value = ''; // 重置会话ID
   }
 
   function onToggleModel(modelName: string) {
