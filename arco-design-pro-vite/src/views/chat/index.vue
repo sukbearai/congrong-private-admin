@@ -61,6 +61,7 @@
   import botImg from '@/assets/images/bot.png';
   import Shiki from '@shikijs/markdown-it';
   import { bundledLanguages } from 'shiki';
+  import { getToken } from '@/utils/auth';
   import ChatCard from './components/ChatCard.vue';
   import ChatTextArea from './components/ChatTextArea.vue';
   import ChatItem from './components/ChatItem.vue';
@@ -302,11 +303,20 @@
     abortController.value = controller;
 
     try {
+      const token = getToken();
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+
       const res = await fetch(
         'https://shebei.congrongtech.cn/api/thirdparty/ai-medsci-chat',
         {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers,
           body: JSON.stringify({
             inputs: {},
             query: currentInput,

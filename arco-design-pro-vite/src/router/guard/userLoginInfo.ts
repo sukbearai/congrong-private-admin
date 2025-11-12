@@ -27,7 +27,7 @@ export default function setupUserLoginInfoGuard(router: Router) {
         }
       }
     } else {
-      if (to.name === 'login' || to.name === 'chat') {
+      if (to.name === 'login') {
         next();
         return;
       }
