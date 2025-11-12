@@ -3,7 +3,7 @@
   <div class="chat-item" :class="{ 'is-user': item.role === 'user' }">
     <div class="chat-header">
       <img :src="item.icon" alt="avatar" class="avatar" />
-      <span class="time">{{ item.time }}</span>
+      <!-- <span class="time">{{ item.time }}</span> -->
     </div>
     <div class="chat-content">
       <!-- 如果是 AI 回复且有 reasoning，显示思考过程 -->
@@ -11,7 +11,7 @@
         v-if="item.role === 'assistant' && item.reasoning?.trim()"
         class="reasoning-section"
       >
-        <details class="reasoning-details">
+        <details class="reasoning-details" open>
           <summary class="reasoning-summary">💭 推理过程</summary>
           <div class="reasoning-content">{{ item.reasoning }}</div>
         </details>

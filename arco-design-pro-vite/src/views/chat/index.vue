@@ -46,7 +46,14 @@
 </template>
 
 <script lang="ts" setup>
-  import { computed, onBeforeMount, onMounted, ref, watch } from 'vue';
+  import {
+    computed,
+    nextTick,
+    onBeforeMount,
+    onMounted,
+    ref,
+    watch,
+  } from 'vue';
   import { useElementSize, useWindowSize } from '@vueuse/core';
   import { Message } from '@arco-design/web-vue';
   import MarkdownIt from 'markdown-it';
@@ -54,10 +61,10 @@
   import botImg from '@/assets/images/bot.png';
   import Shiki from '@shikijs/markdown-it';
   import { bundledLanguages } from 'shiki';
-  import { aiMedsciChat } from '@/api/ai-chat';
   import ChatCard from './components/ChatCard.vue';
   import ChatTextArea from './components/ChatTextArea.vue';
   import ChatItem from './components/ChatItem.vue';
+  import readStream from './utils/sseFetch';
 
   interface MessageItem {
     id: string;
@@ -136,24 +143,43 @@
   const isLoading = ref(false);
   const conversationId = ref('');
   const status = ref<'idle' | 'submitted'>('idle');
+  const abortController = ref<AbortController | null>(null);
+
+  const isWhitespaceOnly = (value?: string | null) => {
+    if (typeof value !== 'string') return true;
+    return value.trim().length === 0;
+  };
+
+  const THINK_OPEN = '<think>';
+  const THINK_CLOSE = '</think>';
 
   const formattedMessages = computed(() => {
-    const formatted = messages.value.map((message, index) => ({
-      ...message,
-      time: new Date().toLocaleTimeString('zh-CN', {
-        hour: '2-digit',
-        minute: '2-digit',
-      }),
-      icon: message.role === 'user' ? userImg : botImg,
-      id: message.id || `message-${index}`,
-      // 渲染 Markdown
-      renderedContent: md.value
-        ?.render(message.content)
-        .replace(/<hr\s*\/?>/gi, ''),
-    }));
+    const formatted = messages.value.map((message, index) => {
+      const rendered = md.value
+        ? md.value.render(message.content)
+        : message.content;
 
-    // 如果正在加载且有消息，添加思考中的临时消息
-    if (status.value === 'submitted' && messages.value.length > 0) {
+      return {
+        ...message,
+        time: new Date().toLocaleTimeString('zh-CN', {
+          hour: '2-digit',
+          minute: '2-digit',
+        }),
+        icon: message.role === 'user' ? userImg : botImg,
+        id: message.id || `message-${index}`,
+        renderedContent:
+          typeof rendered === 'string'
+            ? rendered.replace(/<hr[^>]*>/gi, '')
+            : rendered,
+      };
+    });
+
+    const lastMessage = messages.value[messages.value.length - 1];
+
+    if (
+      status.value === 'submitted' &&
+      (!lastMessage || lastMessage.role !== 'assistant')
+    ) {
       formatted.push({
         id: 'thinking-temp',
         role: 'assistant' as const,
@@ -188,43 +214,179 @@
     isLoading.value = true;
     status.value = 'submitted';
 
-    try {
-      const response = await aiMedsciChat({
-        inputs: {},
-        query: currentInput,
-        response_mode: 'blocking',
-        conversation_id: conversationId.value,
-        user: '外部用户',
-        files: [],
-      });
-
-      const { data } = response;
-
-      if (data.conversation_id && !conversationId.value) {
-        conversationId.value = data.conversation_id;
-      }
-
-      if (data.answer) {
-        // 使用正则替换移除<...>标签包裹的内容
-        const answer = data.answer
-          .replace(/<[^>]*>\n[^<]*<\/[^>]*>/gs, '')
-          .trim();
-
-        const assistantMessage: MessageItem = {
-          id: data.message_id || `assistant-${Date.now()}`,
-          role: 'assistant',
-          content: answer,
-        };
-        messages.value.push(assistantMessage);
-      } else {
-        const emptyMessage: MessageItem = {
+    let assistantMessage: MessageItem | undefined;
+    const ensureAssistantMessage = (): MessageItem => {
+      if (!assistantMessage) {
+        const placeholder: MessageItem = {
           id: `assistant-${Date.now()}`,
           role: 'assistant',
-          content: '抱歉，我无法处理您的请求。',
+          content: '',
         };
-        messages.value.push(emptyMessage);
+        messages.value.push(placeholder);
+        assistantMessage =
+          messages.value[messages.value.length - 1] ?? placeholder;
       }
+      return assistantMessage as MessageItem;
+    };
+
+    const thinkState = { stash: '', inThink: false };
+
+    const calcHoldLength = (value: string, token: string) => {
+      const lowerValue = value.toLowerCase();
+      const lowerToken = token.toLowerCase();
+      const maxHold = Math.min(lowerValue.length, lowerToken.length - 1);
+
+      for (let length = maxHold; length > 0; length -= 1) {
+        const suffix = lowerValue.slice(-length);
+        if (lowerToken.startsWith(suffix)) {
+          return length;
+        }
+      }
+
+      return 0;
+    };
+
+    const consumeAnswerText = (rawText: string) => {
+      let text = `${thinkState.stash}${rawText ?? ''}`;
+      thinkState.stash = '';
+
+      if (!text) {
+        return { visibleText: '', extractedReasoning: '' };
+      }
+
+      let visibleText = '';
+      let extractedReasoning = '';
+
+      while (text.length) {
+        if (!thinkState.inThink) {
+          const lowerText = text.toLowerCase();
+          const openIndex = lowerText.indexOf(THINK_OPEN);
+
+          if (openIndex === -1) {
+            const holdLength = calcHoldLength(text, THINK_OPEN);
+            const emitLength = text.length - holdLength;
+            if (emitLength > 0) {
+              visibleText += text.slice(0, emitLength);
+            }
+            thinkState.stash = holdLength > 0 ? text.slice(-holdLength) : '';
+            break;
+          }
+
+          visibleText += text.slice(0, openIndex);
+          text = text.slice(openIndex + THINK_OPEN.length);
+          thinkState.inThink = true;
+        } else {
+          const lowerText = text.toLowerCase();
+          const closeIndex = lowerText.indexOf(THINK_CLOSE);
+
+          if (closeIndex === -1) {
+            const holdLength = calcHoldLength(text, THINK_CLOSE);
+            const emitLength = text.length - holdLength;
+            if (emitLength > 0) {
+              extractedReasoning += text.slice(0, emitLength);
+            }
+            thinkState.stash = holdLength > 0 ? text.slice(-holdLength) : '';
+            break;
+          }
+
+          extractedReasoning += text.slice(0, closeIndex);
+          text = text.slice(closeIndex + THINK_CLOSE.length);
+          thinkState.inThink = false;
+        }
+      }
+
+      return { visibleText, extractedReasoning };
+    };
+
+    const controller = new AbortController();
+    abortController.value = controller;
+
+    try {
+      const res = await fetch(
+        'https://shebei.congrongtech.cn/api/thirdparty/ai-medsci-chat',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            inputs: {},
+            query: currentInput,
+            response_mode: 'streaming',
+            conversation_id: conversationId.value,
+            user: '外部用户',
+            files: [],
+          }),
+          signal: controller.signal,
+        }
+      );
+
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+      const reader = res.body?.getReader();
+      if (!reader) throw new Error('Readable stream not available');
+
+      await readStream(
+        reader,
+        (chunk) => {
+          if (chunk.conversation_id) {
+            conversationId.value = chunk.conversation_id;
+          }
+
+          const answerText =
+            typeof chunk.answer === 'string' ? chunk.answer : '';
+          const reasoningText =
+            typeof chunk.reasoning === 'string' ? chunk.reasoning : '';
+
+          const { visibleText, extractedReasoning } =
+            consumeAnswerText(answerText);
+
+          const hasVisibleContent = !isWhitespaceOnly(visibleText);
+          const hasReasoningContent =
+            !isWhitespaceOnly(reasoningText) ||
+            !isWhitespaceOnly(extractedReasoning);
+
+          if (!assistantMessage && !hasVisibleContent && !hasReasoningContent) {
+            return;
+          }
+
+          const currentAssistant = ensureAssistantMessage();
+
+          if (hasVisibleContent) {
+            currentAssistant.content += visibleText;
+          }
+
+          if (hasReasoningContent) {
+            const additions: string[] = [];
+
+            if (!isWhitespaceOnly(reasoningText)) {
+              additions.push(reasoningText);
+            }
+
+            if (!isWhitespaceOnly(extractedReasoning)) {
+              additions.push(extractedReasoning);
+            }
+
+            currentAssistant.reasoning = `${
+              currentAssistant.reasoning ?? ''
+            }${additions.join('')}`;
+          }
+
+          nextTick(() => {
+            chatCardRef.value?.scrollToBottom?.();
+          });
+        },
+        controller.signal
+      );
     } catch (error) {
+      if ((error as DOMException)?.name === 'AbortError') {
+        return;
+      }
+
+      const currentAssistant = ensureAssistantMessage();
+      currentAssistant.content = '抱歉，请求出错，请稍后重试。';
+
+      thinkState.stash = '';
+      thinkState.inThink = false;
+
       Message.error({
         content: `网络错误: ${(error as Error).message || '未知错误'}`,
         duration: 5000,
@@ -232,10 +394,19 @@
     } finally {
       isLoading.value = false;
       status.value = 'idle';
+      abortController.value = null;
+      assistantMessage = undefined;
+      thinkState.stash = '';
+      thinkState.inThink = false;
     }
   };
 
   const stop = () => {
+    const controller = abortController.value;
+    if (controller) {
+      controller.abort();
+      abortController.value = null;
+    }
     isLoading.value = false;
     status.value = 'idle';
   };
@@ -270,6 +441,7 @@
     setMessages([]);
     input.value = '';
     conversationId.value = ''; // 重置会话ID
+    abortController.value = null;
   }
 
   function onToggleModel(modelName: string) {

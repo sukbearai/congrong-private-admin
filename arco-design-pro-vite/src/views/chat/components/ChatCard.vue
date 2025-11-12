@@ -75,6 +75,10 @@
 
   const virtualListRef = ref();
 
+  function scrollToBottom() {
+    // virtualListRef.value?.scrollToBottom?.();
+  }
+
   function handleScroll(e: Event) {
     const { scrollTop, scrollHeight, offsetHeight } = e.target as HTMLElement;
     const bottom = Math.floor(scrollHeight - (scrollTop + offsetHeight));
@@ -142,7 +146,7 @@
     getCurrentPageItems(props.data ?? [])
   );
 
-  defineExpose({ virtualListRef });
+  defineExpose({ virtualListRef, scrollToBottom });
 </script>
 
 <template>
