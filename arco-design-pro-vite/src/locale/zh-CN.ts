@@ -39,6 +39,7 @@ export default {
   'userManagement.table.password': '密码',
   'userManagement.table.role': '门店类型',
   'userManagement.table.deviceCount': '关联设备',
+  'userManagement.table.aiEnabled': 'AI功能',
   'userManagement.table.actions': '操作',
   'userManagement.form.nickname': '门店名称',
   'userManagement.form.nicknamePlaceholder': '请输入门店名称',
@@ -51,6 +52,9 @@ export default {
   'userManagement.form.deviceIds': '关联设备',
   'userManagement.form.deviceIdsPlaceholder':
     '请输入关联设备id,多个设备id用英文逗号隔开,如:device001,device002',
+  'userManagement.form.aiEnabled': 'AI功能',
+  'userManagement.ai.enabled': '已开启',
+  'userManagement.ai.disabled': '已关闭',
   'userManagement.role.user': '普通门店',
   'userManagement.role.admin': '旗舰门店',
   'userManagement.actions.edit': '编辑',

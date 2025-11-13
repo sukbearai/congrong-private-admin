@@ -37,6 +37,7 @@ export default {
   'userManagement.table.password': 'Password',
   'userManagement.table.role': 'Store Type',
   'userManagement.table.deviceCount': 'Associated Device',
+  'userManagement.table.aiEnabled': 'AI Feature',
   'userManagement.table.actions': 'Actions',
   'userManagement.form.nickname': 'Store Name',
   'userManagement.form.nicknamePlaceholder': 'Please enter store name',
@@ -49,6 +50,9 @@ export default {
   'userManagement.form.deviceIds': 'Associated Devices',
   'userManagement.form.deviceIdsPlaceholder':
     'Please select associated devices',
+  'userManagement.form.aiEnabled': 'AI Feature',
+  'userManagement.ai.enabled': 'Enabled',
+  'userManagement.ai.disabled': 'Disabled',
   'userManagement.role.user': 'Regular Store',
   'userManagement.role.admin': 'Flagship Store',
   'userManagement.actions.edit': 'Edit',

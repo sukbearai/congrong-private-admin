@@ -63,6 +63,20 @@
             </template>
           </a-table-column>
           <a-table-column
+            :title="$t('userManagement.table.aiEnabled')"
+            data-index="aiEnabled"
+            :width="100"
+          >
+            <template #cell="{ record }">
+              <a-switch
+                v-model="record.aiEnabled"
+                :checked-value="1"
+                :unchecked-value="0"
+                @change="handleAiEnabledChange(record)"
+              />
+            </template>
+          </a-table-column>
+          <a-table-column
             :title="$t('userManagement.table.actions')"
             :width="150"
           >
@@ -155,6 +169,24 @@
             :placeholder="$t('userManagement.form.deviceIdsPlaceholder')"
           />
         </a-form-item>
+
+        <a-form-item
+          field="aiEnabled"
+          :label="$t('userManagement.form.aiEnabled')"
+        >
+          <a-switch
+            v-model="createForm.aiEnabled"
+            :checked-value="1"
+            :unchecked-value="0"
+          >
+            <template #checked>
+              {{ $t('userManagement.ai.enabled') }}
+            </template>
+            <template #unchecked>
+              {{ $t('userManagement.ai.disabled') }}
+            </template>
+          </a-switch>
+        </a-form-item>
       </a-form>
     </a-modal>
 
@@ -226,6 +258,24 @@
             :placeholder="$t('userManagement.form.deviceIdsPlaceholder')"
           />
         </a-form-item>
+
+        <a-form-item
+          field="aiEnabled"
+          :label="$t('userManagement.form.aiEnabled')"
+        >
+          <a-switch
+            v-model="editForm.aiEnabled"
+            :checked-value="1"
+            :unchecked-value="0"
+          >
+            <template #checked>
+              {{ $t('userManagement.ai.enabled') }}
+            </template>
+            <template #unchecked>
+              {{ $t('userManagement.ai.disabled') }}
+            </template>
+          </a-switch>
+        </a-form-item>
       </a-form>
     </a-modal>
   </div>
@@ -273,6 +323,7 @@
     password: '',
     role: 'user',
     deviceIds: '',
+    aiEnabled: 0,
   });
 
   // 编辑用户表单
@@ -283,6 +334,7 @@
     password: '',
     role: 'user',
     deviceIds: '',
+    aiEnabled: 0,
   });
 
   // 重置创建表单
@@ -293,6 +345,7 @@
       password: '',
       role: 'user',
       deviceIds: '',
+      aiEnabled: 0,
     });
     createFormRef.value?.resetFields();
   };
@@ -397,6 +450,7 @@
       password: '',
       role: 'user',
       deviceIds: '',
+      aiEnabled: 0,
     });
     editFormRef.value?.resetFields();
   };
@@ -410,6 +464,7 @@
       password: record.password || '',
       role: record.role,
       deviceIds: record.deviceIds,
+      aiEnabled: record.aiEnabled || 0,
     });
     showEditModal.value = true;
   };
@@ -470,6 +525,28 @@
       user: '普通门店',
     };
     return textMap[role] || role;
+  };
+
+  // 处理AI启用状态变化
+  const handleAiEnabledChange = async (record: UserListItem) => {
+    try {
+      const response = await updateUser({
+        id: record.id,
+        nickname: record.nickname,
+        phone: record.phone,
+        password: record.password || '',
+        role: record.role,
+        deviceIds: record.deviceIds,
+        aiEnabled: record.aiEnabled,
+      });
+      if (response.data) {
+        Message.success(record.aiEnabled === 1 ? 'AI功能已开启' : 'AI功能已关闭');
+      }
+    } catch (error) {
+      // 如果更新失败，恢复原始状态
+      record.aiEnabled = record.aiEnabled === 1 ? 0 : 1;
+      // Message.error('更新AI状态失败');
+    }
   };
 
   // 组件挂载时获取数据

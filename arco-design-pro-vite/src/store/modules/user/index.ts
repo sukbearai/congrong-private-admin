@@ -20,6 +20,7 @@ const useUserStore = defineStore('user', {
     nickname: '',
     password: '',
     deviceIds: '',
+    aiEnabled: 0,
   }),
 
   getters: {

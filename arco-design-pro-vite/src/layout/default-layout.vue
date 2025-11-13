@@ -46,6 +46,7 @@
   <Announcement />
   <!-- Chat bot floating entry -->
   <div
+    v-if="userStore.aiEnabled === 1"
     ref="chatbotEntryRef"
     class="chatbot-entry"
     role="button"

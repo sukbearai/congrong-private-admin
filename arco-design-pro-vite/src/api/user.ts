@@ -18,6 +18,7 @@ export interface CreateUserData {
   password?: string;
   role: string;
   deviceIds: string;
+  aiEnabled?: number;
 }
 
 export interface CreateUserRes {
@@ -27,6 +28,7 @@ export interface CreateUserRes {
   role: string;
   password: any;
   deviceIds: string;
+  aiEnabled: number;
 }
 
 // 用户列表接口
@@ -42,6 +44,7 @@ export interface UserListItem {
   password?: string;
   role: string;
   deviceIds: string;
+  aiEnabled: number;
 }
 
 export interface UserListPagination {
@@ -87,6 +90,7 @@ export interface UpdateUserData {
   password?: string;
   role: string;
   deviceIds: string;
+  aiEnabled?: number;
 }
 
 export interface UpdateUserRes {
@@ -96,6 +100,7 @@ export interface UpdateUserRes {
   role: string;
   password: any;
   deviceIds: string;
+  aiEnabled: number;
 }
 
 // 删除用户接口
