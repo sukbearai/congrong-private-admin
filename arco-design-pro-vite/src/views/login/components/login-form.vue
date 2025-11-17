@@ -84,8 +84,8 @@
 
   const loginConfig = useStorage('login-config', {
     rememberPassword: true,
-    phone: 'admin', // 演示默认值
-    password: 'admin', // demo default value
+    phone: '', // 演示默认值
+    password: '', // demo default value
   });
   const userInfo = reactive({
     phone: loginConfig.value.phone,
@@ -106,7 +106,7 @@
         await userStore.login(values as LoginData);
         const { redirect, ...othersQuery } = router.currentRoute.value.query;
         router.push({
-          name: (redirect as string) || 'Workplace',
+          name: (redirect as string) || 'chat',
           query: {
             ...othersQuery,
           },
