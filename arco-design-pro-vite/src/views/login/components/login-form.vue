@@ -84,8 +84,8 @@
 
   const loginConfig = useStorage('login-config', {
     rememberPassword: true,
-    phone: 'admin', // 演示默认值
-    password: 'admin', // demo default value
+    phone: '', // 演示默认值
+    password: '', // demo default value
   });
   const userInfo = reactive({
     phone: loginConfig.value.phone,
